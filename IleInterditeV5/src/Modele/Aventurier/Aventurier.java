@@ -44,7 +44,9 @@ public class Aventurier {
     public Position getPosition() {
         return position;
     }
-
+    public Grille getEnvironnement(){
+        return position.getGrille();
+    }
     public ArrayList<CarteTresor> getDeckTresor() {
         return deckTresor;
     }
