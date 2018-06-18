@@ -16,4 +16,6 @@ public class Ingenieur extends CarteAventurier {
     public Ingenieur() {
         super("Ingénieur", Utils.Pion.ROUGE);
     }
+    
+    
 }
