@@ -151,6 +151,35 @@ public abstract class CarteAventurier {
         return tuilesInondees;
     }
     
+     public ArrayList<Tuile> getTuilesDeplacement() {
+        int posL = joueur.getPosition().getLigne();
+        int posC = joueur.getPosition().getColonne();
+        
+        
+        // A OPTIMISER...
+        ArrayList<Tuile> tuilesPossibles = new ArrayList<>();
+        if (joueur.getTuile().getEtat() == EtatTuile.INONDEE || joueur.getTuile().getEtat() == EtatTuile.ASSECHEE) { // tuile JOUEUR
+            tuilesPossibles.add(joueur.getTuile()); 
+        }
+        Tuile tuile = joueur.getGrille().getTuile(posL, posC+1);
+        if (tuile != null && (tuile.getEtat() == EtatTuile.INONDEE ||tuile.getEtat() == EtatTuile.ASSECHEE)) { // tuile EST
+            tuilesPossibles.add(tuile);
+        }
+        tuile = joueur.getGrille().getTuile(posL+1, posC);
+        if (tuile != null && (tuile.getEtat() == EtatTuile.INONDEE ||tuile.getEtat() == EtatTuile.ASSECHEE)) { // tuile SUD
+            tuilesPossibles.add(tuile);
+        }
+        tuile = joueur.getGrille().getTuile(posL, posC-1);
+        if (tuile != null && (tuile.getEtat() == EtatTuile.INONDEE ||tuile.getEtat() == EtatTuile.ASSECHEE)) { // tuile OUEST
+            tuilesPossibles.add(tuile);
+        }
+        tuile = joueur.getGrille().getTuile(posL-1, posC);
+        if (tuile != null && (tuile.getEtat() == EtatTuile.INONDEE ||tuile.getEtat() == EtatTuile.ASSECHEE)) { // tuile NORD
+            tuilesPossibles.add(tuile);
+        }
+        return tuilesPossibles;
+    }
+    
     // === GAGNER TRESOR =======================================================
     
     // en cours d'implantation
