@@ -77,6 +77,8 @@ public abstract class CarteAventurier {
                 joueur.getPosition().setColonne(colonne);
                 joueur.getPosition().setLigne(ligne);
                 joueur.utiliserPA();
+        }else{
+            System.out.println("\033[32m [ ERREUR ! ]");
         }
     }
     
