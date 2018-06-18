@@ -72,32 +72,11 @@ public abstract class CarteAventurier {
     // === DEPLACEMENT =========================================================
     
     public void seDeplacer(int ligne, int colonne) {
-        if (joueur != null && joueur.getPointAction() > 0) {
-            Position pos = joueur.getPosition();
-            
-            Tuile tuileDest = pos.getGrille().getTuile(ligne, colonne);
-            if (tuileDest == null || tuileDest.getEtat() == EtatTuile.COULEE) {
-                System.out.println("\033[31m [ ERREUR DEPLACEMENT : TUILE DESTINATION INEXISTANTE OU COULEE ! ]");
-                return;
-            }
-            
-            if (pos.getLigne() == ligne && pos.getColonne() == colonne) {
-                System.out.println("\033[31m [ ERREUR : DEPLACEMENT INUTILE ! ]");
-                return;
-            }
-            
-            int deplacement = Math.abs(ligne - pos.getLigne()) + Math.abs(colonne - pos.getColonne());
-            if (deplacement > 1) {
-                System.out.println("\033[31m [ ERREUR : DEPLACEMENT > A 1 ! ]");
-                return;
-            }
-            
-            pos.setLigne(ligne);
-            pos.setColonne(colonne);
-            System.out.println("\033[32m [ DEPLACEMENT EFFECTUE ! ]");
-            joueur.utiliserPA();
-        } else {
-            System.out.println("\033[31m [ ERREUR  DEPLACEMENT : PAS ASSEZ DE PA ! ]"); // on est sûr que joueur = destinateur
+        if(getTuilesDeplacement().contains(getJoueur().getEnvironnement().getTuile(ligne, colonne))){         
+                System.out.println("\033[32m [ DEPLACEMENT EFFECTUE ! ]");
+                joueur.getPosition().setColonne(colonne);
+                joueur.getPosition().setLigne(ligne);
+                joueur.utiliserPA();
         }
     }
     
