@@ -29,7 +29,6 @@ public class Plongeur extends CarteAventurier {
         int y = this.getJoueur().getPosition().getLigne();
         int l1;
         int l2;
-        int i = 0;
         TreeSet<Position> aa = new TreeSet<>();
         TreeSet<Position> ab = new TreeSet<>();
         ArrayList<Tuile> at = new ArrayList<>();
@@ -42,7 +41,6 @@ public class Plongeur extends CarteAventurier {
             for (Position pos : aa) {
                 ab.addAll(getCaseAdjacenteInCl(pos.getLigne(), pos.getColonne()));
             }
-            i++;
             aa.addAll(ab);
             l2 = aa.size();
         } while (l1 != l2);
