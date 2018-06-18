@@ -55,9 +55,6 @@ public class Plongeur extends CarteAventurier {
         for (Position pos : ab) {
             at.add(getJoueur().getEnvironnement().getTuile(pos.getLigne(), pos.getColonne()));
         }
-        for (Tuile t : at) {
-            System.out.println(t.getNomTuile());
-        }
         return at;
 
     }
