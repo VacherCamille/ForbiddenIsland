@@ -19,6 +19,7 @@ public class Messager extends CarteAventurier {
         super("Messager", Utils.Pion.ORANGE);
     }
     
+    @Override
     public void donnerCarte(Aventurier destinataire, String nomCarte) {
         if (destinataire.hasFullDeck()) {
             System.out.println("\033[31m [ ERREUR DON DE CARTE : DECK DESTINATAIRE PLEIN");
