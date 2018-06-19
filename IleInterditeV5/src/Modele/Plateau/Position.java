@@ -11,7 +11,7 @@ import Modele.Aventurier.Aventurier;
  *
  * @author dieuaida
  */
-public class Position implements Comparable<Position>{
+public class Position {
 
     private int ligne;
     private int colonne;
@@ -29,8 +29,6 @@ public class Position implements Comparable<Position>{
         this.ligne = ligne;
         this.colonne = colonne;
     }
-    
-    
 
     // === GETTERS & SETTERS ===================================================
     public int getLigne() {
@@ -58,20 +56,22 @@ public class Position implements Comparable<Position>{
     }
 
     @Override
-    public int compareTo(Position pos) {
-        if (this.getLigne() == pos.getLigne() && this.getColonne() == pos.getColonne()) {
-            return 0;
-        } else if (this.getLigne() > pos.getLigne()) {
-            return 1;
-        } else {
-            return -1;
-        }
+    public boolean equals(Object obj) {
+        Position pos = (Position) obj;
+        return (pos.getColonne() == this.getColonne() && pos.getLigne() == this.getLigne());
     }
-    // === UTILITAIRE ==========================================================
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 14 * hash + this.ligne;
+        hash = 67 * hash + this.colonne;
+        return hash;
+    }
+
+    // === UTILITAIRE ==========================================================
     public Tuile getTuile() {
         return grille.getTuile(ligne, colonne);
     }
-
 
 }

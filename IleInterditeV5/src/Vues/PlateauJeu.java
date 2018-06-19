@@ -507,4 +507,9 @@ public class PlateauJeu extends Observe {
         }
     }
     
+    public void update(){
+        main.repaint();
+        window.repaint();
+    }
+    
 }

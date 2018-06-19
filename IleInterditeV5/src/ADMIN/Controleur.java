@@ -222,23 +222,16 @@ public class Controleur implements Observateur {
                 }
                 break;
             case AFFICHER_CASES_ASSECHEMENT:
-                destinateur = joueurs.get(msg.destinateur);
-                for (Tuile t : destinateur.getTuilesAssechement()) {
-                    int[] pos = destinateur.getGrille().getPosFromTuile(t);
+                for (Tuile t : joueurCourant().getTuilesAssechement()) {
+                    int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
                     plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
                 }
-                /* posL = msg.posL;
-                 posC = msg.posC;
-                
-                 destinateur.assecherTuile(posL, posC);
-                
-                 this.verifTuilesInondees(); // test
-                 this.verifEtatJoueurs(); // test
-                 */
+                actionCourante = "assechement";
                 break;
 
             case FINIR_TOUR:
                 destinateur = joueurs.get(msg.destinateur);
+         
                 // 1. Les 3 actions max ont été faites... (PA = 0 ou "TERMINER TOUR")
 
                 // 2. Tirer 2 cartes trésor :
@@ -258,7 +251,7 @@ public class Controleur implements Observateur {
                 VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).activer(); // activation du joueur suivant
 
                 destinateur.reinitialiserPA(); // on remet les PA du joueur précédent à 3
-
+                plateauJeu.update();
                 this.verifEtatPartie(); // test
         }
     }
