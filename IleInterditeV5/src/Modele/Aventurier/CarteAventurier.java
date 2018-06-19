@@ -78,12 +78,10 @@ public abstract class CarteAventurier {
     public boolean gagnerTresor(Aventurier a) {
         int j = 0;
         Tresor c = a.getPosition().getTuile().getSpawnTresor();
-
         for (int i = 0; i <= a.getDeckTresor().size(); i++) {
             if (a.getDeckTresor().get(i).getNomCarteT().equals(c.toString())) {
                 j = j + 1;
             }
-
         }
         if (j >= 4) {
             System.out.println("l'Aventurier " + a + " a gagné le trésor " + c.toString());
@@ -188,16 +186,16 @@ public abstract class CarteAventurier {
     }
     
     public HashSet<String> getJoueursTuile(){
-        
         HashSet<String> joueursTuile = new HashSet<>();
         HashMap<String,Position> liste = this.getJoueur().getGrille().getPosJoueurs();
         Position pos = liste.get(this.getJoueur().getNomAventurier());
 
         for (String s : liste.keySet()){
-            if (liste.get(s)==pos){
+            if (liste.get(s).getColonne() == pos.getColonne() && liste.get(s).getLigne() == pos.getLigne()){
                 joueursTuile.add(s);
             }
         }
+        joueursTuile.remove(this.joueur.getNomAventurier());
         return joueursTuile;
     }
 }

@@ -203,10 +203,8 @@ public class VueAventurier extends Observe {
         }
         JLabel labelDestinataire = new JLabel("Choisir le destinataire :");
         cbListeJoueurs = new JComboBox();
-        for (String destinataire : listeJoueurs) {
-            if (!destinataire.equals(nomJoueur)) {
-                cbListeJoueurs.addItem(destinataire);
-            }
+        for (String s : joueur.getRole().getJoueursTuile()) {
+                cbListeJoueurs.addItem(s);
         }
         btnDonnerCarteOk = new JButton("Confirmer");
 
@@ -333,6 +331,7 @@ public class VueAventurier extends Observe {
         btnDonnerCarte.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                initJDialogDonnerCarte();
                 fenetreDonCarte.setVisible(true);
             }
         });

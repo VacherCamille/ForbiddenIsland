@@ -50,19 +50,12 @@ public class Plongeur extends CarteAventurier {
         }
         //transformation en tuile
         at.clear();
-        for (Position pos : ab){
-            System.out.println(pos.getColonne() + ":cl:"+pos.getLigne());
-        }
         for (Position pos : ab) {
             at.add(getJoueur().getEnvironnement().getTuile(pos.getLigne(), pos.getColonne()));
-            System.out.println(getJoueur().getEnvironnement().getTuile(pos.getLigne(), pos.getColonne()).getNomTuile());
-            System.out.println(pos.getColonne() + ":cl:"+pos.getLigne());
         }
-        
         if(at.contains(this.getJoueur().getTuile())){
             at.remove(this.getJoueur().getTuile());
         }
-        
         return at;
 
     }

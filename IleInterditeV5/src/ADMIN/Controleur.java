@@ -48,7 +48,7 @@ public class Controleur implements Observateur {
     private String[] listeJoueurs;
     private int indexOrdre = 0;
     private String difficulte;
-
+    private boolean actionPrecAss = false;
     // Vues
     private final EcranPrincipal ecranPrincipal;
     private PlateauJeu plateauJeu;
@@ -65,7 +65,6 @@ public class Controleur implements Observateur {
     private ArrayList<CarteAventurier> pileAventurier;
 
     private HashMap<String, Aventurier> joueurs;
-
     private NivEau niveauDEau;
 
     public Controleur() {
@@ -191,17 +190,19 @@ public class Controleur implements Observateur {
 
             // === ACTIONS ==================
             case DONNER_CARTE:
+                //penser à donner carte
                 destinateur = joueurs.get(msg.destinateur);
                 Aventurier destinataire = joueurs.get(msg.destinataire);
-
                 if (destinateur.donnerCarte(destinataire, msg.nomCarteT)) {
                     destinateur.utiliserPA();
                 }
-
                 this.verifDeckTresorJoueurs(); // test
                 break;
 
             case AFFICHER_CASES_DEPLACEMENT:
+                for (String s : joueurCourant().getRole().getJoueursTuile()) {
+                    System.out.println(s);
+                }
                 plateauJeu.resetHlight();
                 for (Tuile t : joueurCourant().getTuilesDeplacement()) {
                     int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
@@ -226,18 +227,35 @@ public class Controleur implements Observateur {
                         if (joueurCourant().seDeplacer(msg.posL, msg.posC)) {
                             joueurCourant().utiliserPA();
                         }
-                        System.out.println("deplacement");
-                        System.out.println("c : " + msg.posC);
-                        System.out.println("l : " + msg.posL);
                     }
-                } else if (actionCourante.equals("assechement")) {
-                    if (joueurCourant().getPointAction() > 0) {
-                        if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
-                            joueurCourant().utiliserPA();
+                } 
+                
+                else if (actionCourante.equals("assechement")) {
+                    if (joueurCourant().getRole().getNomRole().equals("Ingénieur")) {
+                        if (joueurCourant().getPointAction() > 0) {
+                            if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
+                                if (!actionPrecAss) {
+                                    if (joueurCourant().getTuilesAssechement().size() > 0) {
+                                        for (Tuile t : joueurCourant().getTuilesAssechement()) {
+                                            int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
+                                            plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+                                        }
+                                        actionPrecAss = true;
+                                    } else {
+                                        joueurCourant().utiliserPA();
+                                    }
+                                } else {
+                                    joueurCourant().utiliserPA();
+                                    actionPrecAss = false;
+                                }
+                            }
                         }
-                        System.out.println("assechement");
-                        System.out.println("c : " + msg.posC);
-                        System.out.println("l : " + msg.posL);
+                    } else {
+                        if (joueurCourant().getPointAction() > 0) {
+                            if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
+                                joueurCourant().utiliserPA();
+                            }
+                        }
                     }
                 }
                 break;
@@ -250,7 +268,6 @@ public class Controleur implements Observateur {
                 // 2. Tirer 2 cartes trésor :
                 this.tirerCarteTresor(destinateur);
                 this.tirerCarteTresor(destinateur);
-
                 // 3. tirer 2 cartes Inondation :
                 for (int i = 0; i < niveauDEau.getWaterLevel(); i++) {
                     this.tirerCarteInondation();
