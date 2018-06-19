@@ -20,6 +20,5 @@ public enum TypesMessages {
     POSITION,
     CARTE_HELICOPTER,
     CARTE_SABLE,
-    
-    
+ 
 }
