@@ -94,7 +94,7 @@ public abstract class CarteAventurier {
           }
          
         }
-
+     }
     
     // === DEPLACEMENT =========================================================
     
