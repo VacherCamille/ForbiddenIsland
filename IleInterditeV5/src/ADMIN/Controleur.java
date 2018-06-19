@@ -194,34 +194,24 @@ public class Controleur implements Observateur {
                 destinateur = joueurs.get(msg.destinateur);
                 Aventurier destinataire = joueurs.get(msg.destinataire);
 
-                destinateur.donnerCarte(destinataire, msg.nomCarteT);
+                if (destinateur.donnerCarte(destinataire, msg.nomCarteT)) {
+                    destinateur.utiliserPA();
+                }
 
                 this.verifDeckTresorJoueurs(); // test
                 break;
 
             case AFFICHER_CASES_DEPLACEMENT:
+                plateauJeu.resetHlight();
                 for (Tuile t : joueurCourant().getTuilesDeplacement()) {
                     int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
                     plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
                 }
                 actionCourante = "deplacement";
                 break;
-            case POSITION:
-                plateauJeu.resetHlight();
-                if (actionCourante.equals("deplacement")) {
-                    joueurCourant().seDeplacer(msg.posL, msg.posC);
-                    System.out.println("deplacement");
-                    System.out.println("c : " + msg.posC);
-                    System.out.println("l : " + msg.posL);
-                }
-                else if (actionCourante.equals("assechement")) {
-                    joueurCourant().assecherTuile(msg.posL, msg.posC);
-                    System.out.println("assechement");
-                    System.out.println("c : " + msg.posC);
-                    System.out.println("l : " + msg.posL);
-                }
-                break;
+
             case AFFICHER_CASES_ASSECHEMENT:
+                plateauJeu.resetHlight();
                 for (Tuile t : joueurCourant().getTuilesAssechement()) {
                     int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
                     plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
@@ -229,11 +219,34 @@ public class Controleur implements Observateur {
                 actionCourante = "assechement";
                 break;
 
-            case FINIR_TOUR:
-                destinateur = joueurs.get(msg.destinateur);
-         
-                // 1. Les 3 actions max ont été faites... (PA = 0 ou "TERMINER TOUR")
+            case POSITION:
+                plateauJeu.resetHlight();
+                if (actionCourante.equals("deplacement")) {
+                    if (joueurCourant().getPointAction() > 0) {
+                        if (joueurCourant().seDeplacer(msg.posL, msg.posC)) {
+                            joueurCourant().utiliserPA();
+                        }
+                        System.out.println("deplacement");
+                        System.out.println("c : " + msg.posC);
+                        System.out.println("l : " + msg.posL);
+                    }
+                } else if (actionCourante.equals("assechement")) {
+                    if (joueurCourant().getPointAction() > 0) {
+                        if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
+                            joueurCourant().utiliserPA();
+                        }
+                        System.out.println("assechement");
+                        System.out.println("c : " + msg.posC);
+                        System.out.println("l : " + msg.posL);
+                    }
+                }
+                break;
 
+            case FINIR_TOUR:
+                plateauJeu.resetHlight();
+                destinateur = joueurs.get(msg.destinateur);
+
+                // 1. Les 3 actions max ont été faites... (PA = 0 ou "TERMINER TOUR")
                 // 2. Tirer 2 cartes trésor :
                 this.tirerCarteTresor(destinateur);
                 this.tirerCarteTresor(destinateur);

@@ -62,7 +62,7 @@ public class Plongeur extends CarteAventurier {
         if(at.contains(this.getJoueur().getTuile())){
             at.remove(this.getJoueur().getTuile());
         }
-       
+        
         return at;
 
     }

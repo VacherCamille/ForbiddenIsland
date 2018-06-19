@@ -48,10 +48,10 @@ public abstract class CarteAventurier {
     }
 
     // === DONNER CARTE ========================================================
-    public void donnerCarte(Aventurier destinataire, String nomCarte) {
+    public boolean donnerCarte(Aventurier destinataire, String nomCarte) {
         if (destinataire.hasFullDeck()) {
             System.out.println("\033[31m [ ERREUR DON DE CARTE : DECK DESTINATAIRE PLEIN");
-            return;
+            return false;
         }
         if (joueur != null && joueur.getPointAction() > 0) {
             Tuile tuileDestinateur = joueur.getTuile();
@@ -62,18 +62,20 @@ public abstract class CarteAventurier {
                 joueur.removeCarteTresor(carteDonnee);
                 destinataire.addCarteTresor(carteDonnee);
                 System.out.println("\033[32m [ CARTE TRANSFEREE ! ]");
-                joueur.utiliserPA();
+                return true;
             } else {
                 System.out.println("\033[31m [ ERREUR DON DE CARTE : TUILE DIFFERENTE ! ]");
+                
             }
         } else {
             System.out.println("\033[31m [ ERREUR DON DE CARTE : PAS ASSEZ DE PA ! ]");
         }
+        return false;
     }
 
     // === GangnerTRESOR =======================================================
 
-    public void gagnerTresor(Aventurier a) {
+    public boolean gagnerTresor(Aventurier a) {
         int j = 0;
         Tresor c = a.getPosition().getTuile().getSpawnTresor();
 
@@ -95,39 +97,40 @@ public abstract class CarteAventurier {
                 }
                 k++;
             }
-
+            return true;
         }
+        return false;
     }
 
     // === DEPLACEMENT =========================================================
-    public void seDeplacer(int ligne, int colonne) {
+    public boolean seDeplacer(int ligne, int colonne) {
         if (getTuilesDeplacement().contains(getJoueur().getEnvironnement().getTuile(ligne, colonne))) {
             System.out.println("\033[32m [ DEPLACEMENT EFFECTUE ! ]");
             joueur.getPosition().setColonne(colonne);
             joueur.getPosition().setLigne(ligne);
-            joueur.utiliserPA();
+            return true;
         } else {
             System.out.println("\033[32m [ ERREUR ! ]");
+            return false;
         }
     }
 
     // === ASSECHEMENT =========================================================
-    public void assecherTuile(int ligne, int colonne) {
+    public boolean assecherTuile(int ligne, int colonne) {
         if (joueur != null && joueur.getPointAction() > 0) {
             ArrayList<Tuile> tuilesInondees = this.getInondeesAdjacentes();
-
             if (tuilesInondees.contains(joueur.getGrille().getTuile(ligne, colonne))) {
                 Tuile tuile = joueur.getGrille().getTuile(ligne, colonne);
-
                 tuile.assecherTuile();
                 System.out.println("\033[32m [ ASSECHEMENT EFFECTUE ! ]");
-                joueur.utiliserPA();
+                return true;
             } else {
                 System.out.println("\033[31m [ ERREUR  ASSECHEMENT : TUILE DEJA ASSECHEE OU HORS DE PORTEE ! ]");
             }
         } else {
             System.out.println("\033[31m [ ERREUR ASSECHEMENT : PAS ASSEZ DE PA ! ]");
         }
+        return false;
     }
 
     // THE méthode coeur de l'assèchement
