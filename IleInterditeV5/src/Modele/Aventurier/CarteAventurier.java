@@ -163,9 +163,6 @@ public abstract class CarteAventurier {
 
         // A OPTIMISER...
         ArrayList<Tuile> tuilesPossibles = new ArrayList<>();
-        if (joueur.getTuile().getEtat() == EtatTuile.INONDEE || joueur.getTuile().getEtat() == EtatTuile.ASSECHEE) { // tuile JOUEUR
-            tuilesPossibles.add(joueur.getTuile());
-        }
         Tuile tuile = joueur.getGrille().getTuile(posL, posC + 1);
         if (tuile != null && (tuile.getEtat() == EtatTuile.INONDEE || tuile.getEtat() == EtatTuile.ASSECHEE)) { // tuile EST
             tuilesPossibles.add(tuile);

@@ -5,9 +5,14 @@
  */
 package Vues;
 
+import MVC.Message;
 import MVC.Observe;
+import MVC.TypesMessages;
+import static MVC.TypesMessages.POSITION;
 import Modele.Plateau.Grille;
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 
 /**
@@ -19,6 +24,7 @@ public class PlateauJeu extends Observe {
     // Variables paramètres
     private String[] listeJoueurs;
     private Grille grille;
+    private TuileGraphique[][] grilleGraphique = new TuileGraphique[6][6];
     
     // Variable JFrame
     private JFrame window;
@@ -72,6 +78,8 @@ public class PlateauJeu extends Observe {
         
         this.initGrille();
     }
+    
+    
     
     // =========================================================================
     
@@ -455,6 +463,8 @@ public class PlateauJeu extends Observe {
         for (int i = 0; i < 6; i++) { // lignes
             for (int j = 0; j < 6; j++) { // colonnes
                 TuileGraphique tuile = new TuileGraphique(grille.getTuile(i, j), grille, listeJoueurs, i, j);
+                grilleGraphique[i][j] = tuile;
+                tuile.setPlateau(this);
                 panelGrille.add(tuile);
             }
         }
@@ -476,4 +486,25 @@ public class PlateauJeu extends Observe {
     public void fermer() {
         window.setVisible(false);
     }
+    
+    public TuileGraphique getTuileGraphique(int x, int y){
+        return grilleGraphique[x][y];
+    }
+    
+    public void notifier(int col, int lig){
+        Message m = new Message();
+        m.type=POSITION;
+        m.posC=col;
+        m.posL=lig;
+        this.notifierObservateur(m);
+    }
+    
+    public void resetHlight(){
+        for (int i = 0; i < 6; i++) { // lignes
+            for (int j = 0; j < 6; j++) { // colonnes
+                 grilleGraphique[i][j].setHlight(false);
+            }
+        }
+    }
+    
 }

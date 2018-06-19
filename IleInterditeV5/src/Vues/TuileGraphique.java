@@ -5,6 +5,8 @@
  */
 package Vues;
 
+import MVC.Message;
+import MVC.TypesMessages;
 import Modele.Plateau.Grille;
 import Modele.Plateau.Position;
 import Modele.Plateau.Tuile;
@@ -24,12 +26,14 @@ import javax.swing.border.LineBorder;
  *
  * @author Aymerick
  */
-class TuileGraphique extends JPanel {
+public class TuileGraphique extends JPanel{
     private final Tuile tuile;
     private final Grille grille;
     private final String[] listeJoueurs;
     private final int ligne;
     private final int colonne;
+    private boolean hlight = false;
+    private PlateauJeu plateau;
     
     private JLabel labelNom;
     
@@ -56,8 +60,12 @@ class TuileGraphique extends JPanel {
                 public void mouseClicked(MouseEvent me) {}
 
                 @Override
-                public void mousePressed(MouseEvent me) {}
-
+                public void mousePressed(MouseEvent me) {
+                    if(hlight){
+                    plateau.notifier(colonne,ligne);
+                    }
+                }
+                
                 @Override
                 public void mouseReleased(MouseEvent me) {}
 
@@ -142,6 +150,10 @@ class TuileGraphique extends JPanel {
                     }
                 }
             }
+            if(hlight){
+                g.setColor(Color.YELLOW);
+                g.fillOval(25, 25, 50, 50);
+            }
             
             
         } else {
@@ -153,4 +165,14 @@ class TuileGraphique extends JPanel {
         
         
     }
+
+    public void setHlight(boolean hlight) {
+        this.hlight = hlight;
+        this.repaint();
+    }
+    
+    public void setPlateau(PlateauJeu p){
+        this.plateau = p;
+    }
+    
 }

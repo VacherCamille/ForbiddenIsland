@@ -120,4 +120,10 @@ public class Aventurier {
     public void assecherTuile(int ligne, int colonne) {
         this.getRole().assecherTuile(ligne, colonne);
     }
+    public ArrayList<Tuile> getTuilesDeplacement(){
+        return this.getRole().getTuilesDeplacement();
+    }
+    public ArrayList<Tuile> getTuilesAssechement(){
+        return this.getRole().getInondeesAdjacentes();
+    }
 }
