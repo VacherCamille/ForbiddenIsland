@@ -35,6 +35,7 @@ import Vues.PlateauJeu;
 import Vues.VueAventurier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  *
@@ -460,4 +461,6 @@ public class Controleur implements Observateur {
         System.out.println("\tNiveau d'eau : " + niveauDEau.getWaterLevel());
         System.out.println();
     }
+
+    
 }
