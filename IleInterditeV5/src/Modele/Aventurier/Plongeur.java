@@ -34,7 +34,7 @@ public class Plongeur extends CarteAventurier {
         ArrayList<Tuile> at = new ArrayList<>();
         //toutes les cases coulées atteignables
         aa = getCaseAdjacenteInCl(x, y);
-
+        aa.add(new Position(x,y));
         ab.addAll(aa);
         do {
             l1 = aa.size();
