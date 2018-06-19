@@ -14,5 +14,7 @@ public enum TypesMessages {
     DONNER_CARTE,
     SE_DEPLACER,
     ASSECHER,
+    CARTE_HELICOPTER,
+    CARTE_SABLE,
     FINIR_TOUR
 }
