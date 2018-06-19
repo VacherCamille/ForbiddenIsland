@@ -12,6 +12,8 @@ import Util.Utils.EtatTuile;
 import Util.Utils.Pion;
 import Util.Utils.Tresor;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  *
@@ -181,7 +183,18 @@ public abstract class CarteAventurier {
         }
         return tuilesPossibles;
     }
+    
+    public HashSet<String> getJoueursTuile(){
+        
+        HashSet<String> joueursTuile = new HashSet<>();
+        HashMap<String,Position> liste = this.getJoueur().getGrille().getPosJoueurs();
+        Position pos = liste.get(this.getJoueur().getNomAventurier());
 
-    // === GAGNER TRESOR =======================================================
-    // en cours d'implantation
+        for (String s : liste.keySet()){
+            if (liste.get(s)==pos){
+                joueursTuile.add(s);
+            }
+        }
+        return joueursTuile;
+    }
 }
