@@ -109,15 +109,21 @@ public class Aventurier {
     
     // === RACCOURCI ACTION ====================================================
     
-    public void donnerCarte(Aventurier destinataire, String nomCarteT) {
-        this.getRole().donnerCarte(destinataire, nomCarteT);
+    public boolean donnerCarte(Aventurier destinataire, String nomCarteT) {
+        return this.getRole().donnerCarte(destinataire, nomCarteT);
     }
     
-    public void seDeplacer(int ligne, int colonne) {
-        this.getRole().seDeplacer(ligne, colonne);
+    public boolean seDeplacer(int ligne, int colonne) {
+        return this.getRole().seDeplacer(ligne, colonne);
     }
     
-    public void assecherTuile(int ligne, int colonne) {
-        this.getRole().assecherTuile(ligne, colonne);
+    public boolean assecherTuile(int ligne, int colonne) {
+        return this.getRole().assecherTuile(ligne, colonne);
+    }
+    public ArrayList<Tuile> getTuilesDeplacement(){
+        return this.getRole().getTuilesDeplacement();
+    }
+    public ArrayList<Tuile> getTuilesAssechement(){
+        return this.getRole().getInondeesAdjacentes();
     }
 }

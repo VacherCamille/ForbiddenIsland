@@ -48,10 +48,10 @@ public abstract class CarteAventurier {
     }
 
     // === DONNER CARTE ========================================================
-    public void donnerCarte(Aventurier destinataire, String nomCarte) {
+    public boolean donnerCarte(Aventurier destinataire, String nomCarte) {
         if (destinataire.hasFullDeck()) {
             System.out.println("\033[31m [ ERREUR DON DE CARTE : DECK DESTINATAIRE PLEIN");
-            return;
+            return false;
         }
         if (joueur != null && joueur.getPointAction() > 0) {
             Tuile tuileDestinateur = joueur.getTuile();
@@ -62,26 +62,26 @@ public abstract class CarteAventurier {
                 joueur.removeCarteTresor(carteDonnee);
                 destinataire.addCarteTresor(carteDonnee);
                 System.out.println("\033[32m [ CARTE TRANSFEREE ! ]");
-                joueur.utiliserPA();
+                return true;
             } else {
                 System.out.println("\033[31m [ ERREUR DON DE CARTE : TUILE DIFFERENTE ! ]");
+                
             }
         } else {
             System.out.println("\033[31m [ ERREUR DON DE CARTE : PAS ASSEZ DE PA ! ]");
         }
+        return false;
     }
 
     // === GangnerTRESOR =======================================================
 
-    public void gagnerTresor(Aventurier a) {
+    public boolean gagnerTresor(Aventurier a) {
         int j = 0;
         Tresor c = a.getPosition().getTuile().getSpawnTresor();
-
         for (int i = 0; i <= a.getDeckTresor().size(); i++) {
             if (a.getDeckTresor().get(i).getNomCarteT().equals(c.toString())) {
                 j = j + 1;
             }
-
         }
         if (j >= 4) {
             System.out.println("l'Aventurier " + a + " a gagné le trésor " + c.toString());
@@ -95,39 +95,40 @@ public abstract class CarteAventurier {
                 }
                 k++;
             }
-
+            return true;
         }
+        return false;
     }
 
     // === DEPLACEMENT =========================================================
-    public void seDeplacer(int ligne, int colonne) {
+    public boolean seDeplacer(int ligne, int colonne) {
         if (getTuilesDeplacement().contains(getJoueur().getEnvironnement().getTuile(ligne, colonne))) {
             System.out.println("\033[32m [ DEPLACEMENT EFFECTUE ! ]");
             joueur.getPosition().setColonne(colonne);
             joueur.getPosition().setLigne(ligne);
-            joueur.utiliserPA();
+            return true;
         } else {
             System.out.println("\033[32m [ ERREUR ! ]");
+            return false;
         }
     }
 
     // === ASSECHEMENT =========================================================
-    public void assecherTuile(int ligne, int colonne) {
+    public boolean assecherTuile(int ligne, int colonne) {
         if (joueur != null && joueur.getPointAction() > 0) {
             ArrayList<Tuile> tuilesInondees = this.getInondeesAdjacentes();
-
             if (tuilesInondees.contains(joueur.getGrille().getTuile(ligne, colonne))) {
                 Tuile tuile = joueur.getGrille().getTuile(ligne, colonne);
-
                 tuile.assecherTuile();
                 System.out.println("\033[32m [ ASSECHEMENT EFFECTUE ! ]");
-                joueur.utiliserPA();
+                return true;
             } else {
                 System.out.println("\033[31m [ ERREUR  ASSECHEMENT : TUILE DEJA ASSECHEE OU HORS DE PORTEE ! ]");
             }
         } else {
             System.out.println("\033[31m [ ERREUR ASSECHEMENT : PAS ASSEZ DE PA ! ]");
         }
+        return false;
     }
 
     // THE méthode coeur de l'assèchement
@@ -165,9 +166,6 @@ public abstract class CarteAventurier {
 
         // A OPTIMISER...
         ArrayList<Tuile> tuilesPossibles = new ArrayList<>();
-        if (joueur.getTuile().getEtat() == EtatTuile.INONDEE || joueur.getTuile().getEtat() == EtatTuile.ASSECHEE) { // tuile JOUEUR
-            tuilesPossibles.add(joueur.getTuile());
-        }
         Tuile tuile = joueur.getGrille().getTuile(posL, posC + 1);
         if (tuile != null && (tuile.getEtat() == EtatTuile.INONDEE || tuile.getEtat() == EtatTuile.ASSECHEE)) { // tuile EST
             tuilesPossibles.add(tuile);
@@ -188,16 +186,16 @@ public abstract class CarteAventurier {
     }
     
     public HashSet<String> getJoueursTuile(){
-        
         HashSet<String> joueursTuile = new HashSet<>();
         HashMap<String,Position> liste = this.getJoueur().getGrille().getPosJoueurs();
         Position pos = liste.get(this.getJoueur().getNomAventurier());
 
         for (String s : liste.keySet()){
-            if (liste.get(s)==pos){
+            if (liste.get(s).getColonne() == pos.getColonne() && liste.get(s).getLigne() == pos.getLigne()){
                 joueursTuile.add(s);
             }
         }
+        joueursTuile.remove(this.joueur.getNomAventurier());
         return joueursTuile;
     }
 }
