@@ -43,6 +43,7 @@ public class SacSable extends CarteTresor {
               System.out.println("\033[32m [ ASSECHEMENT EFFECTUE ! ]");
                 a.utiliserPA();
                 toutesTuilesInondees.remove(tuile);
+                tuile.setEtat(EtatTuile.ASSECHEE);
             } else {
                 System.out.println("\033[31m [ ERREUR  ASSECHEMENT : TUILE DEJA ASSECHEE OU HORS DE PORTEE ! ]");
             }
