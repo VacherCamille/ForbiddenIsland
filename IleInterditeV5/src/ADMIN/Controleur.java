@@ -7,6 +7,7 @@ package ADMIN;
 
 import MVC.Message;
 import MVC.Observateur;
+import MVC.TypesMessages;
 import Modele.Aventurier.Aventurier;
 import Modele.Aventurier.CarteAventurier;
 import Modele.Aventurier.Explorateur;
@@ -286,11 +287,6 @@ public class Controleur implements Observateur {
                 destinateur = joueurs.get(msg.destinateur);
 
                 // 1. Les 3 actions max ont été faites... (PA = 0 ou "TERMINER TOUR")
-                //verifier si la partie est perdue
-                if (Perdu()) {
-                    //fermer fenetre etc
-                }
-
                 // 2. Tirer 2 cartes trésor :
                 this.tirerCarteTresor(destinateur);
                 this.tirerCarteTresor(destinateur);
@@ -311,6 +307,19 @@ public class Controleur implements Observateur {
                 plateauJeu.update();
                 this.verifEtatPartie(); // test
         }
+        
+        //verifier si la partie est perdue
+        if (Perdu()) {
+            finirPartie("perdu");
+        }
+        //passer un tour si le joueur n'a plus de PA
+        if (joueurCourant().getPointAction() == 0) {
+            Message m = new Message();
+            m.type = TypesMessages.FINIR_TOUR;
+            m.destinateur = joueurCourant().getNomAventurier();
+            traiterMessage(m);
+        }
+
     }
 
     // === UTILITAIRE ==========================================================
@@ -594,29 +603,27 @@ public class Controleur implements Observateur {
     }
     //carte helicoptère    
     //public Boolean Gagne(){
-    
-    
-     public void prendreHelicopter(Aventurier joueur){
+
+    public void prendreHelicopter(Aventurier joueur) {
         boolean toutLesTresors = true;
-        
-        for(Tresor t : collectionTresor.keySet()){
-            if (collectionTresor.get(t).equals(false)){
+
+        for (Tresor t : collectionTresor.keySet()) {
+            if (collectionTresor.get(t).equals(false)) {
                 toutLesTresors = false;
             }
         }
-           
-        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs && toutLesTresors == true){
+
+        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs && toutLesTresors == true) {
             finirPartie("gagner");
         }
     }
-        
-    public void finirPartie(String resultat){
-        if (resultat.equals("gagner")){
+
+    public void finirPartie(String resultat) {
+        if (resultat.equals("gagner")) {
             System.out.println("Vous avez gagné !");
-        }else{
+        } else {
             System.out.println("Vous avez perdu !");
-        }  
-    
-    
+        }
+
     }
 }
