@@ -6,6 +6,8 @@
 package Modele.Aventurier;
 
 import Modele.CarteTresor.CarteTresor;
+import Modele.CarteTresor.SacSable;
+import Modele.Plateau.Grille;
 import Modele.Plateau.Position;
 import Modele.Plateau.Tuile;
 import Util.Utils.EtatTuile;
@@ -25,6 +27,7 @@ public abstract class CarteAventurier {
     private final Pion pion;
     private Aventurier joueur;
     private ArrayList<Tresor> tresors;
+
     public CarteAventurier(String nomRole, Pion pion) {
         this.nomRole = nomRole;
         this.pion = pion;
@@ -65,7 +68,7 @@ public abstract class CarteAventurier {
                 return true;
             } else {
                 System.out.println("\033[31m [ ERREUR DON DE CARTE : TUILE DIFFERENTE ! ]");
-                
+
             }
         } else {
             System.out.println("\033[31m [ ERREUR DON DE CARTE : PAS ASSEZ DE PA ! ]");
@@ -74,7 +77,6 @@ public abstract class CarteAventurier {
     }
 
     // === GangnerTRESOR =======================================================
-
     public boolean gagnerTresor(Aventurier a) {
         int j = 0;
         Tresor c = a.getPosition().getTuile().getSpawnTresor();
@@ -91,7 +93,7 @@ public abstract class CarteAventurier {
             while (i > 0) {
                 if (a.getDeckTresor().get(k).getNomCarteT().equals(c.toString())) {
                     a.getDeckTresor().remove(c.toString());
-                i--;
+                    i--;
                 }
                 k++;
             }
@@ -184,18 +186,50 @@ public abstract class CarteAventurier {
         }
         return tuilesPossibles;
     }
-    
-    public HashSet<String> getJoueursTuile(){
+
+    public HashSet<String> getJoueursTuile() {
         HashSet<String> joueursTuile = new HashSet<>();
-        HashMap<String,Position> liste = this.getJoueur().getGrille().getPosJoueurs();
+        HashMap<String, Position> liste = this.getJoueur().getGrille().getPosJoueurs();
         Position pos = liste.get(this.getJoueur().getNomAventurier());
 
-        for (String s : liste.keySet()){
-            if (liste.get(s).getColonne() == pos.getColonne() && liste.get(s).getLigne() == pos.getLigne()){
+        for (String s : liste.keySet()) {
+            if (liste.get(s).getColonne() == pos.getColonne() && liste.get(s).getLigne() == pos.getLigne()) {
                 joueursTuile.add(s);
             }
         }
         joueursTuile.remove(this.joueur.getNomAventurier());
         return joueursTuile;
+    }
+
+    public boolean assecheSacSable(int ligne, int colonne) {
+
+        if ((this.getJoueur().getPointAction() > 0) && (getToutesTuilesInondees().contains(getJoueur().getGrille().getTuile(ligne, colonne))) && (this.getJoueur().getDeckTresor().contains(new SacSable()))) {
+            Tuile tuile = getJoueur().getGrille().getTuile(ligne, colonne);
+            tuile.assecherTuile();
+            getJoueur().getDeckTresor().remove(new SacSable());
+            System.out.println("\033[32m [ ASSECHEMENT EFFECTUE ! ]");
+            tuile.setEtat(EtatTuile.ASSECHEE);
+            return true;
+        } else {
+            System.out.println("\033[31m [ ERREUR  ASSECHEMENT : TUILE DEJA ASSECHEE OU HORS DE PORTEE ! ]");
+            return false;
+        }
+
+    }
+
+    public ArrayList<Tuile> getToutesTuilesInondees() {
+        ArrayList<Tuile> toutesTuilesInondees = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                Tuile tuile = getJoueur().getGrille().getTuile(j, i);
+                if (tuile.getEtat() == EtatTuile.INONDEE) {
+                    toutesTuilesInondees.add(tuile);
+
+                }
+
+            }
+        }
+        return toutesTuilesInondees;
     }
 }
