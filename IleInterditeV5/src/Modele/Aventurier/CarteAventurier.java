@@ -6,6 +6,7 @@
 package Modele.Aventurier;
 
 import Modele.CarteTresor.CarteTresor;
+import Modele.CarteTresor.Helicoptere;
 import Modele.CarteTresor.SacSable;
 import Modele.Plateau.Grille;
 import Modele.Plateau.Position;
@@ -201,31 +202,27 @@ public abstract class CarteAventurier {
     }
 
     public boolean assecheSacSable(int ligne, int colonne) {
-        if ((this.getJoueur().getPointAction() > 0) && (getToutesTuilesInondees().contains(getJoueur().getGrille().getTuile(ligne, colonne))) && (this.getJoueur().getDeckTresor().contains(new SacSable()))) {
+        if ((getJoueur().getGrille().getToutesTuilesInondees().contains(getJoueur().getGrille().getTuile(ligne, colonne))) && (this.getJoueur().getDeckTresor().contains(new SacSable()))) {
             Tuile tuile = getJoueur().getGrille().getTuile(ligne, colonne);
             tuile.assecherTuile();
             getJoueur().getDeckTresor().remove(new SacSable());
             System.out.println("\033[32m [ ASSECHEMENT EFFECTUE ! ]");
-            tuile.setEtat(EtatTuile.ASSECHEE);
             return true;
         } else {
             System.out.println("\033[31m [ ERREUR  ASSECHEMENT : TUILE DEJA ASSECHEE OU HORS DE PORTEE ! ]");
             return false;
         }
-
     }
 
-    public ArrayList<Tuile> getToutesTuilesInondees() {
-        ArrayList<Tuile> toutesTuilesInondees = new ArrayList<>();
-
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                Tuile tuile = getJoueur().getGrille().getTuile(j, i);
-                if (tuile.getEtat() == EtatTuile.INONDEE) {
-                    toutesTuilesInondees.add(tuile);
-                }
-            }
+    public boolean utiliserHelicoptere(Aventurier a, int ligne, int colonne) {
+        if ((getJoueur().getGrille().getToutesTuilesInondeesAssechees().contains(getJoueur().getGrille().getTuile(ligne, colonne))) && (this.getJoueur().getDeckTresor().contains(new Helicoptere()))) {
+            a.getPosition().setLigne(ligne);
+            a.getPosition().setLigne(colonne);
+            getJoueur().getDeckTresor().remove(new Helicoptere());
+            System.out.println("\033[32m [ HELICOPTERE!! HELICOPTERE!! ! ]");
+            return true;
+        } else {
+            return false;
         }
-        return toutesTuilesInondees;
     }
 }
