@@ -18,5 +18,6 @@ public class Executeur {
         // TODO code application logic here
         Controleur controleur = new Controleur();
     }
+    // penser a donner carte et  deckcarte > 5*
     
 }

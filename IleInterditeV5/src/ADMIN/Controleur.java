@@ -35,8 +35,6 @@ import Vues.PlateauJeu;
 import Vues.VueAventurier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  *
@@ -224,49 +222,70 @@ public class Controleur implements Observateur {
 
             case POSITION:
                 plateauJeu.resetHlight();
-                if (actionCourante.equals("deplacement")) {
-                    if (joueurCourant().getPointAction() > 0) {
-                        if (joueurCourant().seDeplacer(msg.posL, msg.posC)) {
-                            joueurCourant().utiliserPA();
-                        }
-                    }
-                } 
-                
-                else if (actionCourante.equals("assechement")) {
-                    if (joueurCourant().getRole().getNomRole().equals("Ingénieur")) {
+                switch (actionCourante) {
+                    case "deplacement":
                         if (joueurCourant().getPointAction() > 0) {
-                            if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
-                                if (!actionPrecAss) {
-                                    if (joueurCourant().getTuilesAssechement().size() > 0) {
-                                        for (Tuile t : joueurCourant().getTuilesAssechement()) {
-                                            int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                                            plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
-                                        }
-                                        actionPrecAss = true;
-                                    } else {
-                                        joueurCourant().utiliserPA();
-                                    }
-                                } else {
-                                    joueurCourant().utiliserPA();
-                                    actionPrecAss = false;
-                                }
-                            }
-                        }
-                    } else {
-                        if (joueurCourant().getPointAction() > 0) {
-                            if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
+                            if (joueurCourant().seDeplacer(msg.posL, msg.posC)) {
                                 joueurCourant().utiliserPA();
                             }
                         }
-                    }
+                        break;
+
+                    case "assechement":
+                        if (joueurCourant().getRole().getNomRole().equals("Ingénieur")) {
+                            if (joueurCourant().getPointAction() > 0) {
+                                if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
+                                    if (!actionPrecAss) {
+                                        if (!joueurCourant().getTuilesAssechement().isEmpty()) {
+                                            for (Tuile t : joueurCourant().getTuilesAssechement()) {
+                                                int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
+                                                plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+                                            }
+                                            actionPrecAss = true;
+                                        } else {
+                                            joueurCourant().utiliserPA();
+                                        }
+                                    } else {
+                                        joueurCourant().utiliserPA();
+                                        actionPrecAss = false;
+                                    }
+                                }
+                            }
+                        } else {
+                            if (joueurCourant().getPointAction() > 0) {
+                                if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
+                                    joueurCourant().utiliserPA();
+                                }
+                            }
+                        }
+                        break;
+                    case "sacSable":
+                        if (joueurCourant().getPointAction() > 0) {
+                            if (joueurCourant().assecheSacSable(msg.posL, msg.posC)) {
+                                joueurCourant().utiliserPA();
+                            }
+                        }
+                        break;
                 }
                 break;
-
+            case CARTE_SABLE:
+                plateauJeu.resetHlight();
+                for (Tuile t : joueurCourant().getToutesTuilesInondees()) {
+                    int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
+                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+                }
+                actionCourante = "sacSable";
+                break;
             case FINIR_TOUR:
                 plateauJeu.resetHlight();
                 destinateur = joueurs.get(msg.destinateur);
 
                 // 1. Les 3 actions max ont été faites... (PA = 0 ou "TERMINER TOUR")
+                //verifier si la partie est perdue
+                if (Perdu()) {
+                    //fermer fenetre etc
+                }
+
                 // 2. Tirer 2 cartes trésor :
                 this.tirerCarteTresor(destinateur);
                 this.tirerCarteTresor(destinateur);
@@ -274,6 +293,7 @@ public class Controleur implements Observateur {
                 for (int i = 0; i < niveauDEau.getWaterLevel(); i++) {
                     this.tirerCarteInondation();
                 }
+                deplacementCoulee();//deplace les joueurs qui se trouvent sur une case coulee
 
                 // Passage du tour de jeu :
                 VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).initJDialogDonnerCarte(); // actualisé puisqu'il a pioché 2 cartes
@@ -393,6 +413,7 @@ public class Controleur implements Observateur {
 
         // 7. Déterminer le niveau d'eau :
         this.verifNiveauEau();
+
     }
 
     private void verifTresors() {
@@ -506,30 +527,66 @@ public class Controleur implements Observateur {
         System.out.println("\tNiveau d'eau : " + niveauDEau.getWaterLevel());
         System.out.println();
     }
-    
-    
-    public void prendreHelicopter(Aventurier joueur){
-        boolean toutLesTresors = true;
-        
-        for(Tresor t : collectionTresor.keySet()){
-            if (collectionTresor.get(t).equals(false)){
-                toutLesTresors = false;
+
+    public boolean Perdu() {//rajouter message
+        boolean flag = false;
+        //si les 2 tuile d'un trésor sombrent avant d'avoir recup le trésor
+        for (Tresor t : collectionTresor.keySet()) {
+            if (!collectionTresor.get(t)) {
+                switch (t) {
+                    case PIERRE:
+                        if (grille.getTuileFromName("Le Temple de la Lune").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Temple du Soleil").getEtat() == EtatTuile.COULEE) {
+                            flag = true;
+                        }
+                        break;
+                    case STATUE:
+                        if (grille.getTuileFromName("Le Jardin des Murmures").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Jardin des Hurlements").getEtat() == EtatTuile.COULEE) {
+                            flag = true;
+                        }
+                        break;
+                    case CRISTAL:
+                        if (grille.getTuileFromName("La Caverne du Brasier").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("La Caverne des Ombres").getEtat() == EtatTuile.COULEE) {
+                            flag = true;
+                        }
+                        break;
+                    case CALICE:
+                        if (grille.getTuileFromName("Le Palais de Corail").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Palais des Marees").getEtat() == EtatTuile.COULEE) {
+                            flag = true;
+                        }
+                        break;
+                }
             }
         }
-           
-        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs && toutLesTresors == true){
-            finirPartie("gagner");
+
+        //si l'heliport sombre
+        if (grille.getTuileFromName("Heliport").getEtat() == EtatTuile.COULEE) {
+            flag = true;
+        }
+
+        //si un pion sur une tuile coulee ne peut pas nager sur une autre tuile 
+        for (String s : joueurs.keySet()) {
+            Aventurier j = joueurs.get(s);
+            if (j.getTuile().getEtat() == EtatTuile.COULEE) {
+                if (j.getTuilesDeplacement().isEmpty()) {
+                    flag = true;
+                }
+            }
+        }
+        //si le marqueur atteint la mort
+        if (niveauDEau.getWaterLevel() == 0) {
+            flag = true;
+        }
+        return flag;
+    }
+
+    public void deplacementCoulee() {
+        for (String nom : joueurs.keySet()) {
+            Aventurier a = joueurs.get(nom);
+            if (a.getTuile().getEtat() == EtatTuile.COULEE && !a.getTuilesDeplacement().isEmpty()) {
+                a.seDeplacer(grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[0], grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[1]);
+            }
         }
     }
-        
-    public void finirPartie(String resultat){
-        if (resultat.equals("gagner")){
-            System.out.println("Vous avez gagné !");
-        }else{
-            System.out.println("Vous avez perdu !");
-        }  
-    
-    
-    }
-    
+    //carte helicoptère    
+    //public Boolean Gagne(){
 }
