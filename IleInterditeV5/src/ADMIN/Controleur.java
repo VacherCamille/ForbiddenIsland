@@ -589,4 +589,29 @@ public class Controleur implements Observateur {
     }
     //carte helicoptère    
     //public Boolean Gagne(){
+    
+    
+     public void prendreHelicopter(Aventurier joueur){
+        boolean toutLesTresors = true;
+        
+        for(Tresor t : collectionTresor.keySet()){
+            if (collectionTresor.get(t).equals(false)){
+                toutLesTresors = false;
+            }
+        }
+           
+        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs && toutLesTresors == true){
+            finirPartie("gagner");
+        }
+    }
+        
+    public void finirPartie(String resultat){
+        if (resultat.equals("gagner")){
+            System.out.println("Vous avez gagné !");
+        }else{
+            System.out.println("Vous avez perdu !");
+        }  
+    
+    
+    }
 }
