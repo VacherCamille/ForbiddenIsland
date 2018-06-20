@@ -207,7 +207,7 @@ public abstract class CarteAventurier {
             getJoueur().getDeckTresor().remove(new SacSable());
             System.out.println("\033[32m [ ASSECHEMENT EFFECTUE ! ]");
             tuile.setEtat(EtatTuile.ASSECHEE);
-            return true;
+            return true; //retourne vrai
         } else {
             System.out.println("\033[31m [ ERREUR  ASSECHEMENT : TUILE DEJA ASSECHEE OU HORS DE PORTEE ! ]");
             return false;

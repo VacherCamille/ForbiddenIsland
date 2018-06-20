@@ -31,7 +31,7 @@ public class Plongeur extends CarteAventurier {
         HashSet<Position> aa = new HashSet<>();
         HashSet<Position> ab = new HashSet<>();
         ArrayList<Tuile> at = new ArrayList<>();
-        //toutes les cases coulées atteignables
+        //toutes les cases coulées et inondees atteignables
         aa = getCaseAdjacenteInCl(x, y);
         aa.add(new Position(x,y));
         ab.addAll(aa);
@@ -48,7 +48,7 @@ public class Plongeur extends CarteAventurier {
         for (Position pos : aa) {
             ab.addAll(getCaseAdjacenteAsIn(pos.getLigne(), pos.getColonne()));
         }
-        //transformation en tuile
+        //transformation en tuile (on transforme l'eau en vin)
         at.clear();
         for (Position pos : ab) {
             at.add(getJoueur().getEnvironnement().getTuile(pos.getLigne(), pos.getColonne()));
