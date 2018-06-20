@@ -8,6 +8,7 @@ package Vues;
 import MVC.Message;
 import MVC.Observe;
 import MVC.TypesMessages;
+import Musique.Audio;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
@@ -158,6 +159,7 @@ public class EcranPrincipal extends Observe {
         dialog = new JDialog(window, "Île Interdite - Nom des Personnages", true);
         this.initDialog();
         
+        
         if (comboBoxNbJ.getSelectedItem().equals("2 Joueurs")) {
             textFieldJ3.setEditable(false);
             textFieldJ4.setEditable(false);
@@ -305,6 +307,9 @@ public class EcranPrincipal extends Observe {
         m.listeJoueurs = this.listeJoueurs;
         m.difficulte = this.difficulte;
         notifierObservateur(m);
+        
+        Audio a = new Audio();
+        a.playSound();
         
         dialog.setVisible(false);
     }

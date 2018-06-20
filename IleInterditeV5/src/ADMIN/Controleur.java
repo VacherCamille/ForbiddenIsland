@@ -35,7 +35,7 @@ import Vues.PlateauJeu;
 import Vues.VueAventurier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import javax.swing.JLabel;
+import java.util.HashSet;
 
 /**
  *
