@@ -8,7 +8,8 @@ package Vues;
 import MVC.Message;
 import MVC.Observe;
 import MVC.TypesMessages;
-import Musique.Audio;
+import Musique.SonJeux;
+import Musique.SonLauncher;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
@@ -308,7 +309,8 @@ public class EcranPrincipal extends Observe {
         m.difficulte = this.difficulte;
         notifierObservateur(m);
         
-        Audio a = new Audio();
+        
+        SonJeux a = new SonJeux();
         a.playSound();
         
         dialog.setVisible(false);

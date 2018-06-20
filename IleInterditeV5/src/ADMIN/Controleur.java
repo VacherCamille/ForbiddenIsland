@@ -25,6 +25,7 @@ import Modele.Divers.NivEau;
 import Modele.Plateau.Grille;
 import Modele.Plateau.Position;
 import Modele.Plateau.Tuile;
+import Musique.SonLauncher;
 import Util.Parameters;
 import Util.Utils;
 import Util.Utils.EtatTuile;
@@ -66,11 +67,14 @@ public class Controleur implements Observateur {
 
     private HashMap<String, Aventurier> joueurs;
     private NivEau niveauDEau;
+    private SonLauncher son;
 
     public Controleur() {
         ecranPrincipal = new EcranPrincipal();
         ecranPrincipal.addObservateur(this);
         ecranPrincipal.afficher();
+        son = new SonLauncher();
+        son.playSound();
     }
 
     private String actionCourante;
@@ -82,6 +86,7 @@ public class Controleur implements Observateur {
 
         switch (msg.type) {
             case DEMARRER_PARTIE:
+                son.stopSound();
                 ecranPrincipal.fermer();
 
                 // récupération des données Message

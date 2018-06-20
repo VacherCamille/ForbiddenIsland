@@ -5,6 +5,8 @@
  */
 package ADMIN;
 
+import Musique.SonLauncher;
+
 /**
  *
  * @author Aymerick
@@ -17,6 +19,7 @@ public class Executeur {
     public static void main(String[] args) {
         // TODO code application logic here
         Controleur controleur = new Controleur();
+        
     }
     // penser a donner carte et  deckcarte > 5*
     
