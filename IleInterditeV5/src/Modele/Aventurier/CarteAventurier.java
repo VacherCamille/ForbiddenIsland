@@ -198,4 +198,5 @@ public abstract class CarteAventurier {
         joueursTuile.remove(this.joueur.getNomAventurier());
         return joueursTuile;
     }
+   
 }

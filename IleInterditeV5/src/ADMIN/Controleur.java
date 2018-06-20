@@ -36,6 +36,7 @@ import Vues.VueAventurier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  *
@@ -505,6 +506,30 @@ public class Controleur implements Observateur {
         System.out.println("\tNiveau d'eau : " + niveauDEau.getWaterLevel());
         System.out.println();
     }
-
+    
+    
+    public void prendreHelicopter(Aventurier joueur){
+        boolean toutLesTresors = true;
+        
+        for(Tresor t : collectionTresor.keySet()){
+            if (collectionTresor.get(t).equals(false)){
+                toutLesTresors = false;
+            }
+        }
+           
+        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs && toutLesTresors == true){
+            finirPartie("gagner");
+        }
+    }
+        
+    public void finirPartie(String resultat){
+        if (resultat.equals("gagner")){
+            System.out.println("Vous avez gagné !");
+        }else{
+            System.out.println("Vous avez perdu !");
+        }  
+    
+    
+    }
     
 }
