@@ -137,7 +137,7 @@ public class Aventurier {
         return getRole().assecheSacSable(ligne, colonne);
     }
 
-    public ArrayList<Tuile> getToutesTuilesInondees() {
-        return getRole().getToutesTuilesInondees();
+    public boolean utiliserHelicoptere(Aventurier a, int ligne, int colonne) {
+        return getRole().utiliserHelicoptere(a, ligne, colonne);
     }
 }

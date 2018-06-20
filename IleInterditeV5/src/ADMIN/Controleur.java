@@ -271,11 +271,20 @@ public class Controleur implements Observateur {
                 break;
             case CARTE_SABLE:
                 plateauJeu.resetHlight();
-                for (Tuile t : joueurCourant().getToutesTuilesInondees()) {
+                for (Tuile t : grille.getToutesTuilesInondees()) {
                     int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
                     plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
                 }
                 actionCourante = "sacSable";
+                break;
+
+            case CARTE_HELICOPTERE://ajouter gagner
+                plateauJeu.resetHlight();
+                for (Tuile t : grille.getToutesTuilesInondeesAssechees()) {
+                    int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
+                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+                }
+                actionCourante = "helicoptere";
                 break;
             case FINIR_TOUR:
                 plateauJeu.resetHlight();
@@ -302,7 +311,7 @@ public class Controleur implements Observateur {
                 plateauJeu.update();
                 this.verifEtatPartie(); // test
         }
-        
+
         //verifier si la partie est perdue
         if (Perdu()) {
             finirPartie("perdu");
@@ -599,7 +608,7 @@ public class Controleur implements Observateur {
     //carte helicoptère    
     //public Boolean Gagne(){
 
-    public void prendreHelicopter(Aventurier joueur) {
+    public void prendreHelicoptere(Aventurier joueur) {
         boolean toutLesTresors = true;
 
         for (Tresor t : collectionTresor.keySet()) {
