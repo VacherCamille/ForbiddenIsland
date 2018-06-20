@@ -16,7 +16,7 @@ import sun.audio.AudioStream;
  */
 public class SonLauncher {
     
-    private String gongFile = "U:\\ForbiddenIsland\\IleInterditeV5\\ressources\\730.wav";
+    private String gongFile = "ressources/730.wav";
     private InputStream inputStream;
     private AudioStream audioStream;
     
