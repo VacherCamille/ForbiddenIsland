@@ -68,7 +68,6 @@ public abstract class CarteAventurier {
                 return true;
             } else {
                 System.out.println("\033[31m [ ERREUR DON DE CARTE : TUILE DIFFERENTE ! ]");
-
             }
         } else {
             System.out.println("\033[31m [ ERREUR DON DE CARTE : PAS ASSEZ DE PA ! ]");
@@ -202,7 +201,6 @@ public abstract class CarteAventurier {
     }
 
     public boolean assecheSacSable(int ligne, int colonne) {
-
         if ((this.getJoueur().getPointAction() > 0) && (getToutesTuilesInondees().contains(getJoueur().getGrille().getTuile(ligne, colonne))) && (this.getJoueur().getDeckTresor().contains(new SacSable()))) {
             Tuile tuile = getJoueur().getGrille().getTuile(ligne, colonne);
             tuile.assecherTuile();
@@ -225,9 +223,7 @@ public abstract class CarteAventurier {
                 Tuile tuile = getJoueur().getGrille().getTuile(j, i);
                 if (tuile.getEtat() == EtatTuile.INONDEE) {
                     toutesTuilesInondees.add(tuile);
-
                 }
-
             }
         }
         return toutesTuilesInondees;

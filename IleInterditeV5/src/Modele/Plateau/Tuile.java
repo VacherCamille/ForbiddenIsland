@@ -55,7 +55,7 @@ public class Tuile {
             this.setEtat(EtatTuile.INONDEE);
             return;
         }
-        if (etat == EtatTuile.INONDEE) {//verifier qu'il n'y ait pas de joueur dessus (perte)
+        if (etat == EtatTuile.INONDEE) {
             this.setEtat(EtatTuile.COULEE);
             return;
         }

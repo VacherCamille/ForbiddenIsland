@@ -35,7 +35,6 @@ import Vues.PlateauJeu;
 import Vues.VueAventurier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  *
@@ -280,15 +279,13 @@ public class Controleur implements Observateur {
             case FINIR_TOUR:
                 plateauJeu.resetHlight();
                 destinateur = joueurs.get(msg.destinateur);
-                
+
                 // 1. Les 3 actions max ont été faites... (PA = 0 ou "TERMINER TOUR")
-                
                 //verifier si la partie est perdue
-                if(Perdu()){
+                if (Perdu()) {
                     //fermer fenetre etc
                 }
-                
-                
+
                 // 2. Tirer 2 cartes trésor :
                 this.tirerCarteTresor(destinateur);
                 this.tirerCarteTresor(destinateur);
@@ -296,6 +293,7 @@ public class Controleur implements Observateur {
                 for (int i = 0; i < niveauDEau.getWaterLevel(); i++) {
                     this.tirerCarteInondation();
                 }
+                deplacementCoulee();//deplace les joueurs qui se trouvent sur une case coulee
 
                 // Passage du tour de jeu :
                 VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).initJDialogDonnerCarte(); // actualisé puisqu'il a pioché 2 cartes
@@ -530,7 +528,7 @@ public class Controleur implements Observateur {
         System.out.println();
     }
 
-    public boolean Perdu() {
+    public boolean Perdu() {//rajouter message
         boolean flag = false;
         //si les 2 tuile d'un trésor sombrent avant d'avoir recup le trésor
         for (Tresor t : collectionTresor.keySet()) {
@@ -581,12 +579,13 @@ public class Controleur implements Observateur {
         return flag;
     }
 
-    public boolean deplacementCoulee(Aventurier a) {
-        if (!a.getTuilesDeplacement().isEmpty()) {
-            a.seDeplacer(grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[0], grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[1]);
-            return true;
+    public void deplacementCoulee() {
+        for (String nom : joueurs.keySet()) {
+            Aventurier a = joueurs.get(nom);
+            if (a.getTuile().getEtat() == EtatTuile.COULEE && !a.getTuilesDeplacement().isEmpty()) {
+                a.seDeplacer(grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[0], grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[1]);
+            }
         }
-        return false;
     }
     //carte helicoptère    
     //public Boolean Gagne(){
