@@ -170,7 +170,7 @@ public class PlateauJeu extends Observe {
         ArrayList<CarteTresor> deck = aventurier.getDeckTresor();
         panelCP.setLayout(new BorderLayout(5, 5));
         // bouton action spéciale
-        panelCentre = new BoutonPerso(BoutonPerso.ACTION_SPECIALE, BoutonPerso.SQUARE);
+        panelCentre = new BoutonPerso(BoutonPerso.ACTION_SPECIALE, BoutonPerso.SQUARE,this);
         panelCentre.addMouseListener(ml);
         panelCP.add(panelCentre, BorderLayout.CENTER);
 
@@ -181,7 +181,7 @@ public class PlateauJeu extends Observe {
         panelCarte.setOpaque(false);
         for (int i = 0; i < nbDeck; i++) {
             String nomCarte = deck.get(i).getNomCarteT();
-            panelCarte.add(new BoutonPerso(nomCarte, BoutonPerso.FILL));
+            panelCarte.add(new BoutonPerso(nomCarte, BoutonPerso.FILL,this));
         }
         panelGauche.add(panelCarte);
         panelCP.add(panelGauche, BorderLayout.WEST);
@@ -193,10 +193,10 @@ public class PlateauJeu extends Observe {
         panelAction.setOpaque(false);
         JPanel panelAct = new JPanel(new GridLayout(2, 2, 5, 5));
         panelAct.setOpaque(false);
-        deplacer = new BoutonPerso(BoutonPerso.SE_DEPLACER, BoutonPerso.FILL);
-        assecher = new BoutonPerso(BoutonPerso.ASSECHER, BoutonPerso.FILL);
-        donnerCarte = new BoutonPerso(BoutonPerso.DONNER_CARTE, BoutonPerso.FILL);
-        gagnerTresor = new BoutonPerso(BoutonPerso.GAGNER_TRESOR, BoutonPerso.FILL);
+        deplacer = new BoutonPerso(BoutonPerso.SE_DEPLACER, BoutonPerso.FILL,this);
+        assecher = new BoutonPerso(BoutonPerso.ASSECHER, BoutonPerso.FILL,this);
+        donnerCarte = new BoutonPerso(BoutonPerso.DONNER_CARTE, BoutonPerso.FILL,this);
+        gagnerTresor = new BoutonPerso(BoutonPerso.GAGNER_TRESOR, BoutonPerso.FILL,this);
         panelAct.add(deplacer);
         deplacer.addMouseListener(ml);
         panelAct.add(assecher);
@@ -208,8 +208,8 @@ public class PlateauJeu extends Observe {
         panelAction.add(panelAct);
         JPanel panelAb = new JPanel(new GridLayout(2, 1, 5, 5));
         panelAb.setOpaque(false);
-        abandonner = new BoutonPerso(BoutonPerso.DONNER_CARTE, BoutonPerso.FILL);
-        finirTour = new BoutonPerso(BoutonPerso.GAGNER_TRESOR, BoutonPerso.FILL);
+        abandonner = new BoutonPerso(BoutonPerso.DONNER_CARTE, BoutonPerso.FILL,this);
+        finirTour = new BoutonPerso(BoutonPerso.GAGNER_TRESOR, BoutonPerso.FILL,this);
         panelAb.add(abandonner);
         abandonner.addMouseListener(ml);
         panelAb.add(finirTour);
@@ -377,11 +377,11 @@ public class PlateauJeu extends Observe {
 
     public void updatePileTresor(ArrayList<CarteTresor> defausseTresor) {
         panelTresor.removeAll();
-        panelTresor.add(new BoutonPerso(BoutonPerso.TRESOR, BoutonPerso.FILL));
+        panelTresor.add(new BoutonPerso(BoutonPerso.TRESOR, BoutonPerso.FILL,this));
         if (!defausseTresor.isEmpty()) {
             int derniereCarte = defausseTresor.size() - 1;
             String nomDerniereCarte = defausseTresor.get(derniereCarte).getNomCarteT();
-            panelTresor.add(new BoutonPerso(nomDerniereCarte, BoutonPerso.FILL));
+            panelTresor.add(new BoutonPerso(nomDerniereCarte, BoutonPerso.FILL,this));
         } else {
             JPanel empty = new JPanel();
             empty.setOpaque(false);
@@ -391,11 +391,11 @@ public class PlateauJeu extends Observe {
 
     public void updatePileInondation(ArrayList<CarteInondation> defausseInondation) {
         panelInondation.removeAll();
-        panelInondation.add(new BoutonPerso(BoutonPerso.INONDATION, BoutonPerso.FILL));
+        panelInondation.add(new BoutonPerso(BoutonPerso.INONDATION, BoutonPerso.FILL,this));
         if (!defausseInondation.isEmpty()) {
             int derniereCarte = defausseInondation.size() - 1;
             String nomDerniereCarte = defausseInondation.get(derniereCarte).getNomCarteI();
-            panelInondation.add(new BoutonPerso(nomDerniereCarte, BoutonPerso.FILL));
+            panelInondation.add(new BoutonPerso(nomDerniereCarte, BoutonPerso.FILL,this));
         } else {
             JPanel empty = new JPanel();
             empty.setOpaque(false);
@@ -609,4 +609,6 @@ public class PlateauJeu extends Observe {
     public void update() {
         window.repaint();
     }
+    
+    
 }

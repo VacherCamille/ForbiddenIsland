@@ -268,11 +268,9 @@ public class Controleur implements Observateur {
                         }
                         break;
                     case "sacSable":
-                        if (joueurCourant().getPointAction() > 0) {
-                            if (joueurCourant().assecheSacSable(msg.posL, msg.posC)) {
-                                joueurCourant().utiliserPA();
-                            }
-                        }
+                        
+                        joueurCourant().assecheSacSable(msg.posL, msg.posC);
+         
                         break;
                 }
                 break;
