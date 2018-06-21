@@ -165,9 +165,9 @@ public class PlateauJeu extends Observe {
     }
 
     public void updateCurrentPlayer(Aventurier aventurier) {
+        panelCP.removeAll();
         nbDeck = aventurier.getNbCartes();
         ArrayList<CarteTresor> deck = aventurier.getDeckTresor();
-
         panelCP.setLayout(new BorderLayout(5, 5));
         // bouton action spéciale
         panelCentre = new BoutonPerso(BoutonPerso.ACTION_SPECIALE, BoutonPerso.SQUARE);
@@ -605,8 +605,8 @@ public class PlateauJeu extends Observe {
     public void fermer() {
         window.setVisible(false);
     }
-    
-    public void update(){
+
+    public void update() {
         window.repaint();
-    }  
+    }
 }

@@ -319,19 +319,10 @@ public class Controleur implements Observateur {
 
                 destinateur.reinitialiserPA(); // on remet les PA du joueur précédent à 3
 
-
                 plateauJeu.updateCurrentPlayer(joueurCourant());
                 plateauJeu.updatePileTresor(defausseTresor);
                 plateauJeu.updatePileInondation(defausseInondation);
-                plateauJeu.updateJ1(joueurs.get(listeJoueurs.get(0)));
-                plateauJeu.updateJ2(joueurs.get(listeJoueurs.get(1)));
-                if (nbJoueurs >= 3) {
-                    plateauJeu.updateJ3(joueurs.get(listeJoueurs.get(2)));
-                }
-                if (nbJoueurs == 4) {
-                    plateauJeu.updateJ4(joueurs.get(listeJoueurs.get(3)));
-                }
-                               plateauJeu.update();
+                plateauJeu.update();
                 this.verifEtatPartie(); // test
         }
 
