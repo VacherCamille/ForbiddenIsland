@@ -167,7 +167,7 @@ public class Grille {
         for (int i = 0; i <= 5; i++) {
             for (int j = 0; j <= 5; j++) {
                 Tuile tuile = getTuile(j, i);
-                if (tuile.getEtat() == Utils.EtatTuile.INONDEE) {
+                if (tuile != null && tuile.getEtat() == Utils.EtatTuile.INONDEE) {
                     toutesTuilesInondees.add(tuile);
                 }
             }
