@@ -5,6 +5,8 @@
  */
 package MVC;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Aymerick
@@ -15,7 +17,7 @@ public class Message {
     
     // DEMARRER_PARTIE
     public int nbJoueurs;
-    public String[] listeJoueurs;
+    public ArrayList<String> listeJoueurs;
     public String difficulte;
     
     // DONNER_CARTE

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ADMIN;
+package Controleur;
 
 import MVC.Message;
 import MVC.Observateur;
@@ -32,9 +32,8 @@ import Util.Utils;
 import Util.Utils.EtatTuile;
 import Util.Utils.Pion;
 import Util.Utils.Tresor;
-import Vues.EcranPrincipal;
-import Vues.PlateauJeu;
-import Vues.VueAventurier;
+import Vues.EcranPrincipal1.EcranPrincipal;
+import Vues.PlateauJeu1.PlateauJeu;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -47,9 +46,10 @@ public class Controleur implements Observateur {
     // DEMARRER_PARTIE:
 
     private int nbJoueurs;
-    private String[] listeJoueurs;
+    private ArrayList<String> listeJoueurs;
     private int indexOrdre = 0;
     private String difficulte;
+    private String actionCourante;
     private boolean actionPrecAss = false;
     // Vues
     private final EcranPrincipal ecranPrincipal;
@@ -75,10 +75,9 @@ public class Controleur implements Observateur {
         ecranPrincipal.addObservateur(this);
         ecranPrincipal.afficher();
         son = new SonLauncher();
-        son.playSound();
+        //son.playSound();
+        son.music();
     }
-
-    private String actionCourante;
 
     @Override
     public void traiterMessage(Message msg) {
@@ -91,11 +90,11 @@ public class Controleur implements Observateur {
                 ecranPrincipal.fermer();
 
                 // récupération des données Message
-                nbJoueurs = msg.nbJoueurs;
                 listeJoueurs = msg.listeJoueurs;
                 difficulte = msg.difficulte;
+                nbJoueurs = listeJoueurs.size();
 
-                // Initialisation des Collections...
+                // Initialisation des Collections :
                 collectionTresor = new HashMap<>();
                 pileInondation = new ArrayList<>();
                 defausseInondation = new ArrayList<>();
@@ -108,35 +107,35 @@ public class Controleur implements Observateur {
                 // 1. Créer l'Île Interdite :
                 grille = new Grille();
 
-                // 2. Placer les Trésors :
-                for (Utils.Tresor tresor : Utils.Tresor.values()) {
+                // 2. Placer les trésors :
+                for (Tresor tresor : Tresor.values()) {
                     collectionTresor.put(tresor, Boolean.FALSE);
                 }
 
                 // 3. Séparer les cartes :
-                // Pile "Inondation" :
+                // Carte Inondation
                 for (String args : Parameters.tuilesJeu) {
-                    String parts[] = args.split(","); // cf. Parameters
+                    String parts[] = args.split(",");
                     String nomCarteI = parts[0];
                     pileInondation.add(new CarteInondation(nomCarteI));
                 }
                 Utils.melangerInondation(pileInondation);
 
-                // Pile "Tresor" (cf. Materiel) :
+                // Carte Tresor
                 for (Tresor tresor : Tresor.values()) {
                     for (int i = 0; i < 5; i++) {
-                        pileTresor.add(new CarteButin(tresor)); // 5 cartes / trésor
+                        pileTresor.add(new CarteButin(tresor));
                     }
                 }
                 for (int i = 0; i < 3; i++) {
-                    pileTresor.add(new MonteeEau()); // 3 cartes montée des eaux
-                    pileTresor.add(new Helicoptere()); // 3 cartes hélicoptère
+                    pileTresor.add(new MonteeEau());
+                    pileTresor.add(new Helicoptere());
                 }
                 pileTresor.add(new SacSable());
-                pileTresor.add(new SacSable()); // 2 cartes sacs de sable
+                pileTresor.add(new SacSable());
                 Utils.melangerTresor(pileTresor);
 
-                // Pile "Aventurier"
+                // Carte Aventurier
                 pileAventurier.add(new Explorateur());
                 pileAventurier.add(new Ingenieur());
                 pileAventurier.add(new Messager());
@@ -147,17 +146,17 @@ public class Controleur implements Observateur {
 
                 // 4. L'Île commence à sombrer :
                 for (int i = 0; i < 6; i++) {
-                    this.tirerCarteInondation(); // 6 fois
+                    this.tirerCarteInondation();
                 }
 
                 // 5. Les aventuriers débarquent :
-                // Création des aventuriers...
+                // Création des aventuriers :
                 for (int i = 0; i < nbJoueurs; i++) {
-                    String nomAventurier = listeJoueurs[i];
+                    String nomAventurier = listeJoueurs.get(i);
                     CarteAventurier role = pileAventurier.get(i);
                     Aventurier nouveauJoueur = new Aventurier(nomAventurier, role);
                     role.setJoueur(nouveauJoueur);
-                    // Détermination de la position du futur joueur...
+
                     Pion pionJoueur = nouveauJoueur.getPion();
                     int[] posJoueur = grille.getPosFromTuile(grille.getTuileFromSpawnPion(pionJoueur));
                     this.addPosition(nouveauJoueur, posJoueur[0], posJoueur[1]);
@@ -169,26 +168,29 @@ public class Controleur implements Observateur {
                 for (String nomJoueur : listeJoueurs) {
                     Aventurier joueur = joueurs.get(nomJoueur);
                     while (joueur.getNbCartes() < 2) {
-                        this.tirerCarteTresorDemarrage(joueur); // comportement différent entre au début et pendant le jeu
+                        this.tirerCarteTresorDemarrage(joueur);
                     }
                 }
 
-                // 7. Déterminer du niveau d'eau :
-                niveauDEau = new NivEau(difficulte); // cf. Constructeur + méthode NivEau
+                // 7. Déterminer le niveau d'eau :
+                niveauDEau = new NivEau(difficulte);
 
-                // + Finalisation + //
-                plateauJeu = new PlateauJeu(grille, listeJoueurs); // plateau de TEST
+                // 8. Finalisation :
+                plateauJeu = new Vues.PlateauJeu1.PlateauJeu(nbJoueurs);
                 plateauJeu.addObservateur(this);
-                plateauJeu.afficher();
-
-                for (String nomJoueur : listeJoueurs) { // création des vues des aventuriers
-                    VueAventurier vueAventurier = new VueAventurier(joueurs.get(nomJoueur), listeJoueurs);
-                    vueAventurier.addObservateur(this);
-                    vueAventurier.desactiver();
-                    vueAventurier.afficher();
+                plateauJeu.initGrille(grille, listeJoueurs);
+                plateauJeu.updateCurrentPlayer(joueurs.get(listeJoueurs.get(indexOrdre)));
+                plateauJeu.updatePileTresor(defausseTresor);
+                plateauJeu.updatePileInondation(defausseInondation);
+                plateauJeu.updateJ1(joueurs.get(listeJoueurs.get(0)));
+                plateauJeu.updateJ2(joueurs.get(listeJoueurs.get(1)));
+                if (nbJoueurs >= 3) {
+                    plateauJeu.updateJ3(joueurs.get(listeJoueurs.get(2)));
                 }
-
-                VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).activer(); // pour le joueur qui commence
+                if (nbJoueurs == 4) {
+                    plateauJeu.updateJ4(joueurs.get(listeJoueurs.get(3)));
+                }
+                plateauJeu.afficher();
 
                 System.out.println("INITIALISATION PARTIE TERMINEE !");
                 this.verifEtatPartie(); // test
@@ -212,7 +214,7 @@ public class Controleur implements Observateur {
                 plateauJeu.resetHlight();
                 for (Tuile t : joueurCourant().getTuilesDeplacement()) {
                     int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
                 }
                 actionCourante = "deplacement";
                 break;
@@ -221,7 +223,7 @@ public class Controleur implements Observateur {
                 plateauJeu.resetHlight();
                 for (Tuile t : joueurCourant().getTuilesAssechement()) {
                     int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
                 }
                 actionCourante = "assechement";
                 break;
@@ -245,7 +247,7 @@ public class Controleur implements Observateur {
                                         if (!joueurCourant().getTuilesAssechement().isEmpty()) {
                                             for (Tuile t : joueurCourant().getTuilesAssechement()) {
                                                 int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                                                plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+                                                plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
                                             }
                                             actionPrecAss = true;
                                         } else {
@@ -274,26 +276,30 @@ public class Controleur implements Observateur {
                         break;
                 }
                 break;
+
             case CARTE_SABLE:
                 plateauJeu.resetHlight();
                 for (Tuile t : grille.getToutesTuilesInondees()) {
                     int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
                 }
                 actionCourante = "sacSable";
                 break;
+            /*
+             case CARTE_HELICOPTERE://ajouter gagner
+             plateauJeu.resetHlight();
+             if (!prendreHelicoptere(joueurCourant())) {
+             for (Tuile t : grille.getToutesTuilesInondeesAssechees()) {
+             int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
+             plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
+             }
+             actionCourante = "helicoptere";
+             }
 
-            case CARTE_HELICOPTERE://ajouter gagner
-                plateauJeu.resetHlight();
-                for (Tuile t : grille.getToutesTuilesInondeesAssechees()) {
-                    int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
-                }
-                actionCourante = "helicoptere";
-                break;
+             break;*/
             case FINIR_TOUR:
                 plateauJeu.resetHlight();
-                destinateur = joueurs.get(msg.destinateur);
+                destinateur = joueurCourant();
 
                 // 1. Les 3 actions max ont été faites... (PA = 0 ou "TERMINER TOUR")
                 // 2. Tirer 2 cartes trésor :
@@ -306,14 +312,26 @@ public class Controleur implements Observateur {
                 deplacementCoulee();//deplace les joueurs qui se trouvent sur une case coulee
 
                 // Passage du tour de jeu :
-                VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).initJDialogDonnerCarte(); // actualisé puisqu'il a pioché 2 cartes
-                VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).desactiver(); // plus son tour de jeu
+                //afficher panel joueur
                 // détermination du joueur suivant :
                 this.joueurSuivant();
-                VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).activer(); // activation du joueur suivant
+                //VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).activer(); // activation du joueur suivant
 
                 destinateur.reinitialiserPA(); // on remet les PA du joueur précédent à 3
-                plateauJeu.update();
+
+
+                plateauJeu.updateCurrentPlayer(joueurCourant());
+                plateauJeu.updatePileTresor(defausseTresor);
+                plateauJeu.updatePileInondation(defausseInondation);
+                plateauJeu.updateJ1(joueurs.get(listeJoueurs.get(0)));
+                plateauJeu.updateJ2(joueurs.get(listeJoueurs.get(1)));
+                if (nbJoueurs >= 3) {
+                    plateauJeu.updateJ3(joueurs.get(listeJoueurs.get(2)));
+                }
+                if (nbJoueurs == 4) {
+                    plateauJeu.updateJ4(joueurs.get(listeJoueurs.get(3)));
+                }
+                               plateauJeu.update();
                 this.verifEtatPartie(); // test
         }
 
@@ -403,7 +421,7 @@ public class Controleur implements Observateur {
     }
 
     private void joueurSuivant() {
-        if (indexOrdre == listeJoueurs.length - 1) {
+        if (indexOrdre == listeJoueurs.size() - 1) {
             indexOrdre = 0;
         } else {
             indexOrdre += 1;
@@ -411,7 +429,7 @@ public class Controleur implements Observateur {
     }
 
     public Aventurier joueurCourant() {
-        return joueurs.get(listeJoueurs[indexOrdre]);
+        return joueurs.get(listeJoueurs.get(indexOrdre));
     }
     // === METHODES POUR LA PHASE DE TEST ======================================
 
@@ -613,7 +631,7 @@ public class Controleur implements Observateur {
     //carte helicoptère    
     //public Boolean Gagne(){
 
-    public void prendreHelicoptere(Aventurier joueur) {
+    public boolean prendreHelicoptere(Aventurier joueur) {
         boolean toutLesTresors = true;
 
         for (Tresor t : collectionTresor.keySet()) {
@@ -622,9 +640,11 @@ public class Controleur implements Observateur {
             }
         }
 
-        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs && toutLesTresors == true) {
+        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs - 1 && toutLesTresors == true) {
             finirPartie("gagner");
+            return true;
         }
+        return false;
     }
 
     public void finirPartie(String resultat) {

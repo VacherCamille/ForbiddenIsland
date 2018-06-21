@@ -1,15 +1,15 @@
+
+import Controleur.Controleur;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ADMIN;
-
-import Musique.SonLauncher;
 
 /**
  *
- * @author Aymerick
+ * @author Aymerick_PC
  */
 public class Executeur {
 
@@ -18,9 +18,7 @@ public class Executeur {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        Controleur controleur = new Controleur();
-        
+        Controleur c = new Controleur();
     }
-    // penser a donner carte et  deckcarte > 5*
     
 }
