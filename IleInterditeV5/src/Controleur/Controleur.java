@@ -32,8 +32,8 @@ import Util.Utils;
 import Util.Utils.EtatTuile;
 import Util.Utils.Pion;
 import Util.Utils.Tresor;
-import Vues.EcranPrincipal1.EcranPrincipal;
-import Vues.PlateauJeu1.PlateauJeu;
+import Vues.Ecranprincipal.EcranPrincipal;
+import Vues.Plateaujeu.PlateauJeu;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -176,10 +176,10 @@ public class Controleur implements Observateur {
                 niveauDEau = new NivEau(difficulte);
 
                 // 8. Finalisation :
-                plateauJeu = new Vues.PlateauJeu1.PlateauJeu(nbJoueurs);
+                plateauJeu = new Vues.Plateaujeu.PlateauJeu(nbJoueurs);
                 plateauJeu.addObservateur(this);
                 plateauJeu.initGrille(grille, listeJoueurs);
-                plateauJeu.updateCurrentPlayer(joueurs.get(listeJoueurs.get(indexOrdre)));
+                plateauJeu.updateCurrentPlayer(joueurs.get(listeJoueurs.get(indexOrdre)),niveauDEau.getWaterLevel());
                 plateauJeu.updatePileTresor(defausseTresor);
                 plateauJeu.updatePileInondation(defausseInondation);
                 plateauJeu.updateJ1(joueurs.get(listeJoueurs.get(0)));
@@ -317,7 +317,7 @@ public class Controleur implements Observateur {
 
                 destinateur.reinitialiserPA(); // on remet les PA du joueur précédent à 3
 
-                plateauJeu.updateCurrentPlayer(joueurCourant());
+                plateauJeu.updateCurrentPlayer(joueurCourant(),niveauDEau.getWaterLevel());
                 plateauJeu.updatePileTresor(defausseTresor);
                 plateauJeu.updatePileInondation(defausseInondation);
                 plateauJeu.update();

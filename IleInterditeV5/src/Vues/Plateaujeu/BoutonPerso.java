@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Vues.PlateauJeu1;
+package Vues.Plateaujeu;
 
 import MVC.Message;
 import MVC.TypesMessages;
@@ -27,9 +27,9 @@ import javax.swing.JPanel;
 public class BoutonPerso extends JPanel {
 
     private PlateauJeu plateau;
-        
-    private boolean hovered = false;
 
+    private boolean hovered = false;
+    private int niveauDeau = -1;
     private String nomCarte;
 
     private int type;
@@ -40,22 +40,29 @@ public class BoutonPerso extends JPanel {
     public static final int GAGNER_TRESOR = 4;
     public static final int TRESOR = 5;
     public static final int INONDATION = 6;
+    public static final int ABANDONNER = 7;
+    public static final int FINIR_TOUR = 8;
 
-    private final int filling;
+    private int filling;
     public static final int FILL = 0;
     public static final int SQUARE = 1;
 
-    public BoutonPerso(int type, int filling,PlateauJeu plateau) {
+    public BoutonPerso(int type, int filling, PlateauJeu plateau) {
         this.setOpaque(false);
         this.type = type;
         this.filling = filling;
         this.setOpaque(false);
         this.plateau = plateau;
-        
+
+    }
+
+    public BoutonPerso(int niveauDeau, PlateauJeu plateau) {
+        this.niveauDeau = niveauDeau;
+        this.plateau = plateau;
     }
 
     // cartes inondation, helicoptere et sacs de sable
-    public BoutonPerso(String nomCarte, int filling,PlateauJeu plateau) {
+    public BoutonPerso(String nomCarte, int filling, PlateauJeu plateau) {
         this.setOpaque(false);
         this.nomCarte = nomCarte;
         this.filling = filling;
@@ -71,22 +78,21 @@ public class BoutonPerso extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 System.out.println(nomCarte);
-                if(nomCarte.equals("Sacs de Sable")){
+                if (nomCarte.equals("Sacs de Sable")) {
                     Message m = new Message();
                     m.type = TypesMessages.CARTE_SABLE;
                     plateau.notifierObservateur(m);
-                }else if(nomCarte.equals("Helicoptere")){
+                } else if (nomCarte.equals("Helicoptere")) {
                     Message m = new Message();
                     m.type = TypesMessages.CARTE_HELICOPTERE;
                     plateau.notifierObservateur(m);
                 }
-                
-                
+
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
- 
+
             }
 
             @Override
@@ -96,7 +102,7 @@ public class BoutonPerso extends JPanel {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                
+
             }
         }
         );
@@ -167,6 +173,12 @@ public class BoutonPerso extends JPanel {
                     case INONDATION:
                         img = new ImageIcon(getClass().getResource("/carte_tresor/dosInondation.png")).getImage();
                         break;
+                    case ABANDONNER:
+                        img = new ImageIcon(getClass().getResource("/plateau_jeu/abandonner.png")).getImage();
+                        break;
+                    case FINIR_TOUR:
+                        img = new ImageIcon(getClass().getResource("/plateau_jeu/finirTour.png")).getImage();
+                        break;
                 }
             } else {
                 switch (type) {
@@ -190,6 +202,12 @@ public class BoutonPerso extends JPanel {
                         break;
                     case INONDATION:
                         img = new ImageIcon(getClass().getResource("/carte_tresor/dosInondation_hover.png")).getImage();
+                        break;
+                    case ABANDONNER:
+                        img = new ImageIcon(getClass().getResource("/plateau_jeu/abandonner_hover.png")).getImage();
+                        break;
+                    case FINIR_TOUR:
+                        img = new ImageIcon(getClass().getResource("/plateau_jeu/finirTour_hover.png")).getImage();
                         break;
                 }
             }
@@ -221,6 +239,11 @@ public class BoutonPerso extends JPanel {
             }
             g.drawImage(img, 0, 0, largeur, hauteur, this);
         }
+
+        if (niveauDeau != -1) {
+            img = new ImageIcon(getClass().getResource("/niveau_eau/niveau" + niveauDeau + ".png")).getImage();
+            g.drawImage(img, 0, 0, largeur, hauteur, this);
+        }
     }
 
     public void setHovered(boolean b) {
@@ -230,6 +253,5 @@ public class BoutonPerso extends JPanel {
     public String getNomCarte() {
         return nomCarte;
     }
-    
-    
+
 }

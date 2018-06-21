@@ -3,17 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Vues.PlateauJeu1;
+package Vues.Plateaujeu;
 
 import MVC.Message;
 import MVC.Observe;
 import MVC.TypesMessages;
-import static MVC.TypesMessages.POSITION;
 import Modele.Aventurier.Aventurier;
 import Modele.CarteTresor.CarteTresor;
 import Modele.Divers.CarteInondation;
 import Modele.Plateau.Grille;
-import Vues.EcranPrincipal1.JPanelBackground;
+import Vues.Ecranprincipal.JPanelBackground;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -53,9 +52,11 @@ public class PlateauJeu extends Observe {
     private BoutonPerso donnerCarte;
     private BoutonPerso gagnerTresor;
     private BoutonPerso abandonner;
+    private JPanel panelAb;
+    private JLabel labelAbandonner;
     private BoutonPerso finirTour;
-    private BoutonPerso panelCentre;
-
+    private JLabel labelFinirTour;
+    private BoutonPerso actionSpeciale;
     // VARIABLES (JOUEUR 1 - JOUEUR 3 - CT)
     private JPanelBackground panelLeft;
     private JPanel panelJ1H, panelJ1F;
@@ -164,15 +165,14 @@ public class PlateauJeu extends Observe {
         }
     }
 
-    public void updateCurrentPlayer(Aventurier aventurier) {
+    public void updateCurrentPlayer(Aventurier aventurier, int waterLevel) {
         panelCP.removeAll();
         nbDeck = aventurier.getNbCartes();
         ArrayList<CarteTresor> deck = aventurier.getDeckTresor();
         panelCP.setLayout(new BorderLayout(5, 5));
         // bouton action spéciale
-        panelCentre = new BoutonPerso(BoutonPerso.ACTION_SPECIALE, BoutonPerso.SQUARE,this);
-        panelCentre.addMouseListener(ml);
-        panelCP.add(panelCentre, BorderLayout.CENTER);
+        actionSpeciale = new BoutonPerso(BoutonPerso.ACTION_SPECIALE, BoutonPerso.SQUARE, this);
+        panelCP.add(actionSpeciale, BorderLayout.CENTER);
 
         // deck carte tresor :
         panelGauche = new JPanel();
@@ -181,42 +181,49 @@ public class PlateauJeu extends Observe {
         panelCarte.setOpaque(false);
         for (int i = 0; i < nbDeck; i++) {
             String nomCarte = deck.get(i).getNomCarteT();
-            panelCarte.add(new BoutonPerso(nomCarte, BoutonPerso.FILL,this));
+            panelCarte.add(new BoutonPerso(nomCarte, BoutonPerso.FILL, this));
         }
         panelGauche.add(panelCarte);
         panelCP.add(panelGauche, BorderLayout.WEST);
 
         // boutons actions :
-        panelDroite = new JPanel();
+        panelDroite = new JPanel(new BorderLayout(5, 5));
         panelDroite.setOpaque(false);
-        panelAction = new JPanel(new GridLayout(1, 2, 50, 50));
+        panelAction = new JPanel(new GridLayout(2, 2, 5, 5));
         panelAction.setOpaque(false);
-        JPanel panelAct = new JPanel(new GridLayout(2, 2, 5, 5));
-        panelAct.setOpaque(false);
         deplacer = new BoutonPerso(BoutonPerso.SE_DEPLACER, BoutonPerso.FILL,this);
         assecher = new BoutonPerso(BoutonPerso.ASSECHER, BoutonPerso.FILL,this);
         donnerCarte = new BoutonPerso(BoutonPerso.DONNER_CARTE, BoutonPerso.FILL,this);
         gagnerTresor = new BoutonPerso(BoutonPerso.GAGNER_TRESOR, BoutonPerso.FILL,this);
-        panelAct.add(deplacer);
-        deplacer.addMouseListener(ml);
-        panelAct.add(assecher);
-        assecher.addMouseListener(ml);
-        panelAct.add(donnerCarte);
-        donnerCarte.addMouseListener(ml);
-        panelAct.add(gagnerTresor);
-        gagnerTresor.addMouseListener(ml);
-        panelAction.add(panelAct);
-        JPanel panelAb = new JPanel(new GridLayout(2, 1, 5, 5));
+        panelAction.add(deplacer);
+        panelAction.add(assecher);
+        panelAction.add(donnerCarte);
+        panelAction.add(gagnerTresor);
+        panelDroite.add(panelAction, BorderLayout.WEST);
+
+        BoutonPerso niveauDeau = new BoutonPerso(waterLevel,this);
+        niveauDeau.setOpaque(false);
+        panelDroite.add(niveauDeau, BorderLayout.CENTER);
+
+        panelAb = new JPanel(new GridLayout(2, 1, 5, 5));
         panelAb.setOpaque(false);
-        abandonner = new BoutonPerso(BoutonPerso.DONNER_CARTE, BoutonPerso.FILL,this);
-        finirTour = new BoutonPerso(BoutonPerso.GAGNER_TRESOR, BoutonPerso.FILL,this);
+        abandonner = new BoutonPerso(BoutonPerso.ABANDONNER, BoutonPerso.FILL,this);
+        abandonner.setLayout(new BorderLayout());
+        labelAbandonner = new JLabel("ABANDONNER");
+        labelAbandonner.setHorizontalAlignment(JLabel.CENTER);
+        abandonner.add(labelAbandonner, BorderLayout.CENTER);
+        finirTour = new BoutonPerso(BoutonPerso.FINIR_TOUR, BoutonPerso.FILL,this);
+        finirTour.setLayout(new BorderLayout());
+        labelFinirTour = new JLabel("FINIR TOUR");
+        labelFinirTour.setHorizontalAlignment(JLabel.CENTER);
+        finirTour.add(labelFinirTour, BorderLayout.CENTER);
         panelAb.add(abandonner);
-        abandonner.addMouseListener(ml);
         panelAb.add(finirTour);
-        finirTour.addMouseListener(ml);
-        panelAction.add(panelAb);
-        panelDroite.add(panelAction);
+        panelDroite.add(panelAb, BorderLayout.EAST);
         panelCP.add(panelDroite, BorderLayout.EAST);
+
+
+
     }
 
     public void updateJ1(Aventurier joueur1) {
@@ -377,11 +384,11 @@ public class PlateauJeu extends Observe {
 
     public void updatePileTresor(ArrayList<CarteTresor> defausseTresor) {
         panelTresor.removeAll();
-        panelTresor.add(new BoutonPerso(BoutonPerso.TRESOR, BoutonPerso.FILL,this));
+        panelTresor.add(new BoutonPerso(BoutonPerso.TRESOR, BoutonPerso.FILL, this));
         if (!defausseTresor.isEmpty()) {
             int derniereCarte = defausseTresor.size() - 1;
             String nomDerniereCarte = defausseTresor.get(derniereCarte).getNomCarteT();
-            panelTresor.add(new BoutonPerso(nomDerniereCarte, BoutonPerso.FILL,this));
+            panelTresor.add(new BoutonPerso(nomDerniereCarte, BoutonPerso.FILL, this));
         } else {
             JPanel empty = new JPanel();
             empty.setOpaque(false);
@@ -391,11 +398,11 @@ public class PlateauJeu extends Observe {
 
     public void updatePileInondation(ArrayList<CarteInondation> defausseInondation) {
         panelInondation.removeAll();
-        panelInondation.add(new BoutonPerso(BoutonPerso.INONDATION, BoutonPerso.FILL,this));
+        panelInondation.add(new BoutonPerso(BoutonPerso.INONDATION, BoutonPerso.FILL, this));
         if (!defausseInondation.isEmpty()) {
             int derniereCarte = defausseInondation.size() - 1;
             String nomDerniereCarte = defausseInondation.get(derniereCarte).getNomCarteI();
-            panelInondation.add(new BoutonPerso(nomDerniereCarte, BoutonPerso.FILL,this));
+            panelInondation.add(new BoutonPerso(nomDerniereCarte, BoutonPerso.FILL, this));
         } else {
             JPanel empty = new JPanel();
             empty.setOpaque(false);
@@ -422,13 +429,18 @@ public class PlateauJeu extends Observe {
                 int largeurGD = largeurCP / 2 - hauteurCP / 2;
                 int hauteurGD = hauteurCP;
 
+                panelDroite.setBorder(new EmptyBorder((int) (hauteurGD * 0.18), (int) (largeurGD * 0.02), (int) (hauteurGD * 0.12), (int) (largeurGD * 0.08)));
+
+                panelAction.setPreferredSize(new Dimension((int) (hauteurGD * 0.8), (int) (hauteurGD * 0.8)));
+                panelAb.setPreferredSize(new Dimension((int) (hauteurGD * 0.8), (int) (hauteurGD * 0.8)));
+
                 int hauteurDeck = (int) (hauteurGD * 0.8);
                 int largeurDeck = (int) (hauteurDeck * 0.55 * nbDeck + (nbDeck - 1) * 20);
                 panelCarte.setPreferredSize(new Dimension(largeurDeck, hauteurDeck));
                 panelCarte.setBorder(new EmptyBorder((int) (hauteurGD * 0.2), 0, 0, 0));
 
-                panelAction.setPreferredSize(new Dimension((int) (hauteurGD * 0.6 * 2 + 50), (int) (hauteurGD * 0.8)));
-                panelAction.setBorder(new EmptyBorder((int) (hauteurGD * 0.2), 0, 0, 0));
+                labelAbandonner.setFont(new Font("Impact", Font.PLAIN, (int) (largeurGD * 0.02)));
+                labelFinirTour.setFont(new Font("Impact", Font.PLAIN, (int) (largeurGD * 0.02)));
 
                 // EAST - WEST
                 panelLeft.setPreferredSize(new Dimension((int) (largeurRef * 0.15), hauteurRef));
@@ -500,10 +512,6 @@ public class PlateauJeu extends Observe {
                     m.type = TypesMessages.FINIR_TOUR;
                     notifierObservateur(m);
                 }
-                if (me.getSource() == panelCentre) {
-                    panelCentre.setHovered(true);
-                    panelCentre.repaint();
-                }
             }
 
             @Override
@@ -538,10 +546,7 @@ public class PlateauJeu extends Observe {
                     finirTour.setHovered(true);
                     finirTour.repaint();
                 }
-                if (me.getSource() == panelCentre) {
-                    panelCentre.setHovered(true);
-                    panelCentre.repaint();
-                }
+
             }
 
             @Override
@@ -571,10 +576,7 @@ public class PlateauJeu extends Observe {
                     finirTour.setHovered(false);
                     finirTour.repaint();
                 }
-                if (me.getSource() == panelCentre) {
-                    panelCentre.setHovered(false);
-                    panelCentre.repaint();
-                }
+
             }
         };
     }
@@ -582,8 +584,6 @@ public class PlateauJeu extends Observe {
     public TuileGraphique getTuileGraphique(int x, int y) {
         return grilleGraphique[x][y];
     }
-
-
 
     public void resetHlight() {
         for (int i = 0; i < 6; i++) { // lignes
@@ -603,8 +603,7 @@ public class PlateauJeu extends Observe {
     }
 
     public void update() {
-                window.repaint();
+        window.repaint();
     }
-    
-    
+
 }
