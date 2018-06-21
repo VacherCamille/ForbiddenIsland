@@ -206,6 +206,13 @@ public class Controleur implements Observateur {
                 }
                 this.verifDeckTresorJoueurs(); // test
                 break;
+                
+             case GAGNER_TRESOR:
+                destinateur = joueurs.get(msg.destinateur); 
+                destinateur.getRole().gagnerTresor(destinateur);
+                destinateur.utiliserPA();
+                
+                break;    
 
             case AFFICHER_CASES_DEPLACEMENT:
                 for (String s : joueurCourant().getRole().getJoueursTuile()) {
