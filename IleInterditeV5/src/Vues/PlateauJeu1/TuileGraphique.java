@@ -5,6 +5,8 @@
  */
 package Vues.PlateauJeu1;
 
+import MVC.Message;
+import static MVC.TypesMessages.POSITION;
 import Modele.Plateau.Grille;
 import Modele.Plateau.Position;
 import Modele.Plateau.Tuile;
@@ -103,7 +105,11 @@ public class TuileGraphique extends JPanel {
                 @Override
                 public void mousePressed(MouseEvent me) {
                     if (hlight != Color.BLACK) {
-                        plateau.notifier(colonne, ligne);
+                        Message m = new Message();
+                        m.type = POSITION;
+                        m.posC = colonne;
+                        m.posL = ligne;
+                        plateau.notifierObservateur(m);
                     }
                 }
 

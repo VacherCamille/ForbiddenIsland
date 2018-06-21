@@ -164,8 +164,8 @@ public class Grille {
     public ArrayList<Tuile> getToutesTuilesInondees() {
         ArrayList<Tuile> toutesTuilesInondees = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i <= 5; i++) {
+            for (int j = 0; j <= 5; j++) {
                 Tuile tuile = getTuile(j, i);
                 if (tuile.getEtat() == Utils.EtatTuile.INONDEE) {
                     toutesTuilesInondees.add(tuile);
@@ -178,8 +178,8 @@ public class Grille {
     public ArrayList<Tuile> getToutesTuilesInondeesAssechees() {
         ArrayList<Tuile> toutesTuilesInondeesAssechees = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i <= 5; i++) {
+            for (int j = 0; j <= 5; j++) {
                 Tuile tuile = getTuile(j, i);
                 if (tuile.getEtat() == Utils.EtatTuile.INONDEE || tuile.getEtat() == Utils.EtatTuile.ASSECHEE) {
                     toutesTuilesInondeesAssechees.add(tuile);

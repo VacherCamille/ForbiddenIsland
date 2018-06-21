@@ -581,13 +581,7 @@ public class PlateauJeu extends Observe {
         return grilleGraphique[x][y];
     }
 
-    public void notifier(int col, int lig) {
-        Message m = new Message();
-        m.type = POSITION;
-        m.posC = col;
-        m.posL = lig;
-        this.notifierObservateur(m);
-    }
+
 
     public void resetHlight() {
         for (int i = 0; i < 6; i++) { // lignes
@@ -607,6 +601,6 @@ public class PlateauJeu extends Observe {
     }
 
     public void update() {
-        window.repaint();
+                window.repaint();
     }
 }

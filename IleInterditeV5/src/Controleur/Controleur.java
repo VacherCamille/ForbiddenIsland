@@ -268,12 +268,10 @@ public class Controleur implements Observateur {
                         }
                         break;
                     case "sacSable":
-                        if (joueurCourant().getPointAction() > 0) {
-                            if (joueurCourant().assecheSacSable(msg.posL, msg.posC)) {
-                                joueurCourant().utiliserPA();
-                            }
-                        }
+                        joueurCourant().assecheSacSable(msg.posL, msg.posC);
                         break;
+                    case "helicoptere":
+                        //
                 }
                 break;
 
@@ -285,18 +283,18 @@ public class Controleur implements Observateur {
                 }
                 actionCourante = "sacSable";
                 break;
-            /*
-             case CARTE_HELICOPTERE://ajouter gagner
-             plateauJeu.resetHlight();
-             if (!prendreHelicoptere(joueurCourant())) {
-             for (Tuile t : grille.getToutesTuilesInondeesAssechees()) {
-             int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-             plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(true);
-             }
-             actionCourante = "helicoptere";
-             }
 
-             break;*/
+            case CARTE_HELICOPTERE://ajouter gagner
+                plateauJeu.resetHlight();
+                if (!prendreHelicoptere(joueurCourant())) {
+                    for (Tuile t : grille.getToutesTuilesInondeesAssechees()) {
+                        int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
+                        plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
+                    }
+                    actionCourante = "helicoptere";
+                }
+
+                break;
             case FINIR_TOUR:
                 plateauJeu.resetHlight();
                 destinateur = joueurCourant();
