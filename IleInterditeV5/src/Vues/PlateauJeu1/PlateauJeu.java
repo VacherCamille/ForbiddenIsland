@@ -483,7 +483,7 @@ public class PlateauJeu extends Observe {
                 }
                 if (me.getSource() == donnerCarte) {
                     Message m = new Message();
-                    m.type = TypesMessages.AFFICHER_CASES_ASSECHEMENT;
+                    m.type = TypesMessages.DONNER_CARTE;
                     notifierObservateur(m);
                 }
                 if (me.getSource() == gagnerTresor) {
