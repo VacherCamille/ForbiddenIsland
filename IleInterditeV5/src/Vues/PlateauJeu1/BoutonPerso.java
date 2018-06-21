@@ -70,9 +70,14 @@ public class BoutonPerso extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                System.out.println(nomCarte);
                 if(nomCarte.equals("Sacs de Sable")){
                     Message m = new Message();
                     m.type = TypesMessages.CARTE_SABLE;
+                    plateau.notifierObservateur(m);
+                }else if(nomCarte.equals("Helicoptere")){
+                    Message m = new Message();
+                    m.type = TypesMessages.CARTE_HELICOPTERE;
                     plateau.notifierObservateur(m);
                 }
                 

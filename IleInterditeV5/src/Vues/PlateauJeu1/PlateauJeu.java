@@ -482,12 +482,14 @@ public class PlateauJeu extends Observe {
                     notifierObservateur(m);
                 }
                 if (me.getSource() == donnerCarte) {
-                    donnerCarte.setHovered(true);
-                    donnerCarte.repaint();
+                    Message m = new Message();
+                    m.type = TypesMessages.AFFICHER_CASES_ASSECHEMENT;
+                    notifierObservateur(m);
                 }
                 if (me.getSource() == gagnerTresor) {
-                    gagnerTresor.setHovered(true);
-                    gagnerTresor.repaint();
+                    Message m = new Message();
+                    m.type = TypesMessages.AFFICHER_CASES_ASSECHEMENT;
+                    notifierObservateur(m);
                 }
                 if (me.getSource() == abandonner) {
                     abandonner.setHovered(true);

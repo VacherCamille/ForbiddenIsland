@@ -271,7 +271,7 @@ public class Controleur implements Observateur {
                         joueurCourant().assecheSacSable(msg.posL, msg.posC);
                         break;
                     case "helicoptere":
-                        //
+//                        joueurCourant().utiliserHelicoptere(,posL, msg.posC);
                 }
                 break;
 
