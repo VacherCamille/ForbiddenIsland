@@ -191,28 +191,28 @@ public class PlateauJeu extends Observe {
         panelDroite.setOpaque(false);
         panelAction = new JPanel(new GridLayout(2, 2, 5, 5));
         panelAction.setOpaque(false);
-        deplacer = new BoutonPerso(BoutonPerso.SE_DEPLACER, BoutonPerso.FILL,this);
-        assecher = new BoutonPerso(BoutonPerso.ASSECHER, BoutonPerso.FILL,this);
-        donnerCarte = new BoutonPerso(BoutonPerso.DONNER_CARTE, BoutonPerso.FILL,this);
-        gagnerTresor = new BoutonPerso(BoutonPerso.GAGNER_TRESOR, BoutonPerso.FILL,this);
+        deplacer = new BoutonPerso(BoutonPerso.SE_DEPLACER, BoutonPerso.FILL, this);
+        assecher = new BoutonPerso(BoutonPerso.ASSECHER, BoutonPerso.FILL, this);
+        donnerCarte = new BoutonPerso(BoutonPerso.DONNER_CARTE, BoutonPerso.FILL, this);
+        gagnerTresor = new BoutonPerso(BoutonPerso.GAGNER_TRESOR, BoutonPerso.FILL, this);
         panelAction.add(deplacer);
         panelAction.add(assecher);
         panelAction.add(donnerCarte);
         panelAction.add(gagnerTresor);
         panelDroite.add(panelAction, BorderLayout.WEST);
 
-        BoutonPerso niveauDeau = new BoutonPerso(waterLevel,this);
+        BoutonPerso niveauDeau = new BoutonPerso(waterLevel, this);
         niveauDeau.setOpaque(false);
         panelDroite.add(niveauDeau, BorderLayout.CENTER);
 
         panelAb = new JPanel(new GridLayout(2, 1, 5, 5));
         panelAb.setOpaque(false);
-        abandonner = new BoutonPerso(BoutonPerso.ABANDONNER, BoutonPerso.FILL,this);
+        abandonner = new BoutonPerso(BoutonPerso.ABANDONNER, BoutonPerso.FILL, this);
         abandonner.setLayout(new BorderLayout());
         labelAbandonner = new JLabel("ABANDONNER");
         labelAbandonner.setHorizontalAlignment(JLabel.CENTER);
         abandonner.add(labelAbandonner, BorderLayout.CENTER);
-        finirTour = new BoutonPerso(BoutonPerso.FINIR_TOUR, BoutonPerso.FILL,this);
+        finirTour = new BoutonPerso(BoutonPerso.FINIR_TOUR, BoutonPerso.FILL, this);
         finirTour.setLayout(new BorderLayout());
         labelFinirTour = new JLabel("FINIR TOUR");
         labelFinirTour.setHorizontalAlignment(JLabel.CENTER);
@@ -221,8 +221,13 @@ public class PlateauJeu extends Observe {
         panelAb.add(finirTour);
         panelDroite.add(panelAb, BorderLayout.EAST);
         panelCP.add(panelDroite, BorderLayout.EAST);
-
-
+        activerBouton(deplacer);
+        activerBouton(assecher);
+        activerBouton(donnerCarte);
+        activerBouton(gagnerTresor);
+        activerBouton(abandonner);
+        activerBouton(finirTour);
+        activerBouton(actionSpeciale);
 
     }
 
@@ -475,6 +480,7 @@ public class PlateauJeu extends Observe {
     }
 
     private void initListener() {
+
         ml = new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
@@ -499,9 +505,6 @@ public class PlateauJeu extends Observe {
                     notifierObservateur(m);
                 }
                 if (me.getSource() == gagnerTresor) {
-                    Message m = new Message();
-                    m.type = TypesMessages.AFFICHER_CASES_ASSECHEMENT;
-                    notifierObservateur(m);
                 }
                 if (me.getSource() == abandonner) {
                     abandonner.setHovered(true);
@@ -606,4 +609,7 @@ public class PlateauJeu extends Observe {
         window.repaint();
     }
 
+    private void activerBouton(BoutonPerso bouton) {
+        bouton.addMouseListener(ml);
+    }
 }
