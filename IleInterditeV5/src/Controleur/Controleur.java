@@ -224,6 +224,13 @@ public class Controleur implements Observateur {
                 plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
                 plateauJeu.refresh();
                 break;
+                
+            case JETER_CARTE:   
+                this.jeterCarte(joueurActuel(),joueurActuel().getCarteTresorFromName(msg.nomCarteT));
+                plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
+                plateauJeu.refresh();
+                plateauJeu.updateGrille(grille, listeJoueurs);
+                break;
 
             case AFFICHER_CASES_ASSECHEMENT:
                 plateauJeu.updateGrille(grille, listeJoueurs);
@@ -395,6 +402,11 @@ public class Controleur implements Observateur {
             
         }
         
+    }
+    
+    public void jeterCarte(Aventurier aventurier,CarteTresor carte){
+        aventurier.getDeckTresor().remove(carte);
+        defausseTresor.add(carte);
     }
 
     private void setModeCarte(boolean b) {
