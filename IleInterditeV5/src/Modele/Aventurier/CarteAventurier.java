@@ -88,20 +88,20 @@ public abstract class CarteAventurier {
     
     // === GAGNER TRESOR =======================================================
     
-    public Tresor gagnerTresor(Aventurier aventurier) {
+    public Tresor gagnerTresor() {
         int nbCarte = 0;
-        Tresor tresor = aventurier.getPosition().getTuile().getSpawnTresor();
-        for (int i = 0; i <= aventurier.getNbCartes(); i++) {
-            CarteTresor carte = aventurier.getDeckTresor().get(i);
+        Tresor tresor = getJoueur().getPosition().getTuile().getSpawnTresor();
+        for (int i = 0; i <= getJoueur().getNbCartes(); i++) {
+            CarteTresor carte = getJoueur().getDeckTresor().get(i);
             if (carte.getNomCarteT().equals(tresor.toString())) {
                 nbCarte += 1;
             }
         }
         if (nbCarte >= 4) {
             int i = 4;
-            for (CarteTresor ct : aventurier.getDeckTresor()) {
+            for (CarteTresor ct : getJoueur().getDeckTresor()) {
                 if (ct.getNomCarteT().equals(tresor.toString())) {
-                    aventurier.removeCarteTresor(ct);
+                    getJoueur().removeCarteTresor(ct);
                     i--;
                 }
                 if (i == 0) break;
