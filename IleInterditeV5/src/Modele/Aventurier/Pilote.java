@@ -20,10 +20,10 @@ public class Pilote extends CarteAventurier {
         super("Pilote", Utils.Pion.BLEU);
     }
 
-    private boolean actionSpeciale = true;
+
 
     public void prendreHelico(int l, int c) {
-        if (actionSpeciale && getTuilesHelico().contains(getJoueur().getEnvironnement().getTuile(l, c))) {
+        if ( getTuilesHelico().contains(getJoueur().getEnvironnement().getTuile(l, c))) {
             getJoueur().getPosition().setColonne(c);
             getJoueur().getPosition().setLigne(l);
         }
@@ -40,10 +40,6 @@ public class Pilote extends CarteAventurier {
             }
         }
         return tuiles;
-    }
-
-    public void setActionSpeciale(boolean actionSpeciale) {
-        this.actionSpeciale = actionSpeciale;
     }
 
 }

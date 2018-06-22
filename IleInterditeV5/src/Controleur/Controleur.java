@@ -71,10 +71,13 @@ public class Controleur implements Observateur {
 
     private NivEau niveauDEau;
 
-    private Aventurier joueurDeplace;
     // Variables utilitaires :
+    private Aventurier joueurSelectionne;
     private boolean mode_carte = false;
     private boolean actPrecAss = false;
+    private boolean actionSpeciale = false;
+    private boolean actionSpePilote = false;
+    private int etatDonnerCarte = 0;
 
     public Controleur() {
         ecranPrincipal = new EcranPrincipal();
@@ -88,6 +91,7 @@ public class Controleur implements Observateur {
     public void traiterMessage(Message msg) {
         switch (msg.type) {
             case DEMARRER_PARTIE:
+
                 ecranPrincipal.fermer();
 
                 // récupération des données message :
@@ -197,51 +201,86 @@ public class Controleur implements Observateur {
                 break;
 
             case AFFICHER_CASES_DEPLACEMENT:
+
                 plateauJeu.updateGrille(grille, listeJoueurs);
                 ArrayList<Tuile> tuilesDep;
                 tuilesDep = null;
-                if (!msg.cardMode) {
-                    tuilesDep = joueurActuel().getTuilesDeplacement();
-                } else {
-                    if (!prendreHelicoptere(joueurActuel())) {
+                if (!actionSpeciale) {
+                    if (!msg.cardMode) {
+                        tuilesDep = joueurActuel().getTuilesDeplacement();
+                    } else {
+                        if (!prendreHelicoptere(joueurActuel())) {
+                            tuilesDep = grille.getTuilesInondeesAssechees();
+                            this.setModeCarte(true);
+                        }
+                    }
+                    for (Tuile tuile : tuilesDep) {
+                        int[] pos = grille.getPosFromTuile(tuile);
+                        TuileGraphique tg = plateauJeu.getTuileGraphique(pos[0], pos[1]);
+                        plateauJeu.activerTuile(tg, "déplacer");
+                        tg.setBorder(new LineBorder(Color.GREEN, 6));
+                    }
+
+                } else {//action speciale
+                    if (joueurActuel().getRole().getNomRole().equals("Navigateur")) {
+                        tuilesDep = joueurs.get(msg.destinataire).getRole().getTuilesDeplacementNavigateur();
+                    } else if (joueurActuel().getRole().getNomRole().equals("Pilote") && !actionSpePilote) {//si le pilote ne la pas encore utilisé
                         tuilesDep = grille.getTuilesInondeesAssechees();
-                        this.setModeCarte(true);
+                    }
+
+                    for (Tuile tuile : tuilesDep) {
+                        int[] pos = grille.getPosFromTuile(tuile);
+                        TuileGraphique tg = plateauJeu.getTuileGraphique(pos[0], pos[1]);
+                        plateauJeu.activerTuile(tg, "déplacer");
+                        tg.setBorder(new LineBorder(Color.GREEN, 6));
                     }
                 }
-                for (Tuile tuile : tuilesDep) {
-                    int[] pos = grille.getPosFromTuile(tuile);
-                    TuileGraphique tg = plateauJeu.getTuileGraphique(pos[0], pos[1]);
-                    plateauJeu.activerTuile(tg, "déplacer");
-                    tg.setBorder(new LineBorder(Color.GREEN, 6));
-                }
+                etatDonnerCarte = 0;
                 plateauJeu.refresh();
                 break;
 
             case SE_DEPLACER:
-                if (!mode_carte) {
-                    joueurActuel().seDeplacer(msg.posL, msg.posC);
+                if (!actionSpeciale) {
+                    if (!mode_carte) {
+                        joueurActuel().seDeplacer(msg.posL, msg.posC);
+                        joueurActuel().utiliserPA();
+                    } else {//helicoptere
+                        joueurSelectionne.seDeplacer(msg.posL, msg.posC);
+                        joueurActuel().utiliserPA();
+                        this.setModeCarte(false);
+                        defausseTresor.add(joueurActuel().removeOccurenceCarte("Helicoptere"));
+                        plateauJeu.updateDefausseTresor(defausseTresor);
+                    }
+                } else {//navigateur ou pilote
+                    if (joueurActuel().getRole().getNomRole().equals("Navigateur")) {
+                        joueurSelectionne.seDeplacer(msg.posL, msg.posC);
+                    } else {
+                        joueurActuel().seDeplacer(msg.posL, msg.posC);
+                        actionSpePilote = true;
+                    }
                     joueurActuel().utiliserPA();
-                } else {
-                    System.out.println(joueurDeplace.getNomAventurier());
-                    joueurDeplace.seDeplacer(msg.posL, msg.posC);
-                    this.setModeCarte(false);
-                    defausseTresor.add(joueurActuel().removeOccurenceCarte("Helicoptere"));
-                    plateauJeu.updateDefausseTresor(defausseTresor);
                 }
+                etatDonnerCarte = 0;
                 plateauJeu.updateGrille(grille, listeJoueurs);
                 plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
                 plateauJeu.refresh();
+                actionSpeciale = false;
+
                 break;
 
             case JETER_CARTE:
+                etatDonnerCarte = 0;
+                actionSpeciale = false;
                 this.jeterCarte(joueurActuel(), joueurActuel().getCarteTresorFromName(msg.nomCarteT));
                 plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
-                plateauJeu.refresh();
                 plateauJeu.updateGrille(grille, listeJoueurs);
                 plateauJeu.updateDefausseTresor(defausseTresor);
+                plateauJeu.refresh();
                 break;
 
             case AFFICHER_CASES_ASSECHEMENT:
+                actionSpeciale = false;
+
                 plateauJeu.updateGrille(grille, listeJoueurs);
                 ArrayList<Tuile> tuilesAss;
                 if (!msg.cardMode) {
@@ -256,10 +295,13 @@ public class Controleur implements Observateur {
                     plateauJeu.activerTuile(tg, "assécher");
                     tg.setBorder(new LineBorder(Color.CYAN, 6));
                 }
+                etatDonnerCarte = 0;
+                actionSpeciale = false;
                 plateauJeu.refresh();
                 break;
 
             case ASSECHER:
+
                 joueurActuel().assecherTuile(msg.posL, msg.posC);
                 joueurActuel().utiliserPA();
                 if (!mode_carte) {
@@ -289,6 +331,8 @@ public class Controleur implements Observateur {
 
                 } else {
                     this.setModeCarte(false);
+                    etatDonnerCarte = 0;
+                    actionSpeciale = false;
                     defausseTresor.add(joueurActuel().removeOccurenceCarte("Sacs de Sable"));
                     plateauJeu.updateDefausseTresor(defausseTresor);
                     plateauJeu.updateGrille(grille, listeJoueurs);
@@ -298,11 +342,17 @@ public class Controleur implements Observateur {
                 break;
 
             case DONNER_CARTE:
-                //highlight les joueur pouvant recevoir une carte+ add actionlistener
+                etatDonnerCarte = 1;
+                actionSpeciale = false;
+
+                //highlight les joueur pouvant recevoir une carte+ 
                 //
                 break;
 
             case GAGNER_TRESOR:
+                etatDonnerCarte = 0;
+                actionSpeciale = false;
+
                 Tresor t = joueurActuel().getRole().gagnerTresor();
                 if (t != null) {
                     collectionTresor.remove(t);
@@ -326,7 +376,9 @@ public class Controleur implements Observateur {
                 // au tour du joueur suivant :
                 this.joueurActuel().reinitialiserPA(); // on remet les PA du joueur à 3 pour la prochaine fois
                 this.nextPlayer();
-
+                actionSpePilote = false;
+                etatDonnerCarte = 0;
+                actionSpeciale = false;
                 plateauJeu.updateGrille(grille, listeJoueurs);
                 plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
                 plateauJeu.updateDefausseTresor(defausseTresor);
@@ -337,15 +389,25 @@ public class Controleur implements Observateur {
                 break;
 
             case JOUEUR:
-                System.out.println(msg.destinataire);
+                if (etatDonnerCarte > 0) {
+                    joueurSelectionne = joueurs.get(msg.destinataire);
+                    etatDonnerCarte = 2;
+                }
                 if (mode_carte) {//helicoptere
 
-                    joueurDeplace = joueurs.get(msg.destinataire);
+                    joueurSelectionne = joueurs.get(msg.destinataire);
                     Message m = new Message();
                     m.type = TypesMessages.AFFICHER_CASES_DEPLACEMENT;
                     m.cardMode = true;
                     traiterMessage(m);
 
+                } else if (joueurActuel().getRole().getNomRole().equals("Navigateur") && actionSpeciale) {//navigateur
+                    joueurSelectionne = joueurs.get(msg.destinataire);
+                    Message m = new Message();
+                    m.type = TypesMessages.AFFICHER_CASES_DEPLACEMENT;
+                    m.cardMode = false;
+                    m.destinataire = msg.destinataire;
+                    traiterMessage(m);
                 } else {//donnercarte
 
                 }
@@ -353,6 +415,34 @@ public class Controleur implements Observateur {
 
             case HELICOPTERE:
                 mode_carte = true;
+                break;
+
+            case CARTE: //choisir carte a donner
+                if (etatDonnerCarte == 2) {
+                    if (joueurActuel().donnerCarte(joueurSelectionne, msg.destinataire)) {
+                        joueurActuel().utiliserPA();
+                    }
+                    etatDonnerCarte = 0;
+                    actionSpeciale = false;
+                    plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
+                    plateauJeu.updateDefausseTresor(defausseTresor);
+                    plateauJeu.updateDefausseInondation(defausseInondation);
+                    plateauJeu.refresh();
+                }
+                break;
+
+            case ACTION_SPECIALE:
+                if (joueurActuel().getRole().getNomRole().equals("Pilote") && !actionSpePilote) {
+                    actionSpeciale = true;
+                    Message m = new Message();
+                    m.type = TypesMessages.AFFICHER_CASES_DEPLACEMENT;
+                    m.cardMode = false;
+                    traiterMessage(m);
+                } else if (joueurActuel().getRole().getNomRole().equals("Navigateur")) {
+                    actionSpeciale = true;
+                    //mise en valeur des joueurs
+                }
+                etatDonnerCarte = 0;
                 break;
             case ABANDONNER:
                 plateauJeu.fermer();

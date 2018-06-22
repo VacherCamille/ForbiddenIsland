@@ -76,7 +76,7 @@ public class Aventurier {
     }
     
     public boolean hasFullDeck() {
-        return this.getNbCartes() == 5;
+        return this.getNbCartes() > 5;
     }
     
     public void addCarteTresor(CarteTresor carteTresor) {
@@ -114,8 +114,8 @@ public class Aventurier {
     
     // === RACCOURCI ACTION ====================================================
     
-    public void donnerCarte(Aventurier destinataire, String nomCarteT) {
-        this.getRole().donnerCarte(destinataire, nomCarteT);
+    public boolean donnerCarte(Aventurier destinataire, String nomCarteT) {
+        return this.getRole().donnerCarte(destinataire, nomCarteT);
     }
     
     public void seDeplacer(int ligne, int colonne) {

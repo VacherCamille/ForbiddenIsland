@@ -8,6 +8,7 @@ package Modele.Aventurier;
 import Modele.CarteTresor.CarteTresor;
 import Modele.Plateau.Position;
 import Modele.Plateau.Tuile;
+import Util.Utils;
 import Util.Utils.EtatTuile;
 import Util.Utils.Pion;
 import Util.Utils.Tresor;
@@ -20,17 +21,17 @@ import java.util.HashSet;
  * @author dieuaida
  */
 public abstract class CarteAventurier {
+
     private final String nomRole;
     private final Pion pion;
     private Aventurier joueur;
-    
+
     public CarteAventurier(String nomRole, Pion pion) {
         this.nomRole = nomRole;
         this.pion = pion;
     }
-    
-    // === GETTERS & SETTERS ===================================================
 
+    // === GETTERS & SETTERS ===================================================
     public String getNomRole() {
         return nomRole;
     }
@@ -46,15 +47,11 @@ public abstract class CarteAventurier {
     public void setJoueur(Aventurier joueur) {
         this.joueur = joueur;
     }
-    
+
     // === DONNER CARTE ========================================================
-    
-    public void donnerCarte(Aventurier destinataire, String nomCarte) {
-        if (destinataire.hasFullDeck()) {
-            System.out.println("\033[31m [ ERREUR DON DE CARTE : DECK DESTINATAIRE PLEIN");
-            return;
-        }
-        if (joueur != null && joueur.getPointAction() > 0) {
+    public boolean donnerCarte(Aventurier destinataire, String nomCarte) {
+
+        if (joueur != null) {
             Tuile tuileDestinateur = joueur.getTuile();
             //Tuile tuileDestinataire = destinataire.getPosition().getTuile();
             Tuile tuileDestinataire = destinataire.getTuile();
@@ -63,14 +60,14 @@ public abstract class CarteAventurier {
                 joueur.removeCarteTresor(carteDonnee);
                 destinataire.addCarteTresor(carteDonnee);
                 System.out.println("\033[32m [ CARTE TRANSFEREE ! ]");
+                return true;
             } else {
                 System.out.println("\033[31m [ ERREUR DON DE CARTE : TUILE DIFFERENTE ! ]");
             }
-        } else {
-            System.out.println("\033[31m [ ERREUR DON DE CARTE : PAS ASSEZ DE PA ! ]");
         }
+        return false;
     }
-    
+
     public HashSet<String> getJoueursTuile() {
         HashSet<String> joueursTuile = new HashSet<>(); // pour ne pas compter le donneur 2 fois
         HashMap<String, Position> liste = joueur.getEnvironnement().getPosJoueurs();
@@ -85,9 +82,8 @@ public abstract class CarteAventurier {
         joueursTuile.remove(joueur.getNomAventurier());
         return joueursTuile;
     }
-    
+
     // === GAGNER TRESOR =======================================================
-    
     public Tresor gagnerTresor() {
         int nbCarte = 0;
         Tresor tresor = getJoueur().getPosition().getTuile().getSpawnTresor();
@@ -104,28 +100,29 @@ public abstract class CarteAventurier {
                     getJoueur().removeCarteTresor(ct);
                     i--;
                 }
-                if (i == 0) break;
+                if (i == 0) {
+                    break;
+                }
             }
             return tresor;
         } else {
             return null;
         }
     }
-    
+
     // === DEPLACEMENT =========================================================
-    
     public void seDeplacer(int ligne, int colonne) {
         if (joueur != null && joueur.getPointAction() > 0) {
             joueur.getPosition().setColonne(colonne);
             joueur.getPosition().setLigne(ligne);
         }
     }
-    
+
     // méthode pour récupérer les tuiles accessibles autour de soi :
     public ArrayList<Tuile> getTuilesDeplacement() {
         int posL = joueur.getPosition().getLigne();
         int posC = joueur.getPosition().getColonne();
-        
+
         ArrayList<Tuile> tuilesPossibles = new ArrayList<>();
         Tuile tuile = joueur.getEnvironnement().getTuile(posL, posC + 1);
         if (tuile != null && (tuile.getEtat() == EtatTuile.INONDEE || tuile.getEtat() == EtatTuile.ASSECHEE)) { // tuile EST
@@ -145,45 +142,86 @@ public abstract class CarteAventurier {
         }
         return tuilesPossibles;
     }
-    
+
     // === ASSECHEMENT =========================================================
-    
     public void assecherTuile(int ligne, int colonne) {
         if (joueur != null && joueur.getPointAction() > 0) {
             Tuile tuile = joueur.getEnvironnement().getTuile(ligne, colonne);
             tuile.assecherTuile();
         }
     }
-    
+
     // méthode pour récupérer les tuiles inondées autour de soi :
     public ArrayList<Tuile> getInondeesAdjacentes() {
         int posL = joueur.getPosition().getLigne();
         int posC = joueur.getPosition().getColonne();
-        
+
         ArrayList<Tuile> tuilesInondees = new ArrayList<>();
         if (joueur.getTuile().getEtat() == EtatTuile.INONDEE) { // tuile JOUEUR
-            tuilesInondees.add(joueur.getTuile()); 
+            tuilesInondees.add(joueur.getTuile());
         }
-        Tuile tuile = joueur.getEnvironnement().getTuile(posL, posC+1);
+        Tuile tuile = joueur.getEnvironnement().getTuile(posL, posC + 1);
         if (tuile != null && tuile.getEtat() == EtatTuile.INONDEE) { // tuile EST
             tuilesInondees.add(tuile);
         }
-        tuile = joueur.getEnvironnement().getTuile(posL+1, posC);
+        tuile = joueur.getEnvironnement().getTuile(posL + 1, posC);
         if (tuile != null && tuile.getEtat() == EtatTuile.INONDEE) { // tuile SUD
             tuilesInondees.add(tuile);
         }
-        tuile = joueur.getEnvironnement().getTuile(posL, posC-1);
+        tuile = joueur.getEnvironnement().getTuile(posL, posC - 1);
         if (tuile != null && tuile.getEtat() == EtatTuile.INONDEE) { // tuile OUEST
             tuilesInondees.add(tuile);
         }
-        tuile = joueur.getEnvironnement().getTuile(posL-1, posC);
+        tuile = joueur.getEnvironnement().getTuile(posL - 1, posC);
         if (tuile != null && tuile.getEtat() == EtatTuile.INONDEE) { // tuile NORD
             tuilesInondees.add(tuile);
         }
         return tuilesInondees;
     }
-    
+
     // === ACTION SPECIALE =====================================================
-    
-    
+    public ArrayList<Tuile> getTuilesDeplacementNavigateur() {
+        Aventurier joueur = getJoueur();
+        int posL = getJoueur().getPosition().getLigne();
+        int posC = joueur.getPosition().getColonne();
+
+        ArrayList<Tuile> tuiles = getTuilesAdjacentes(posL, posC);
+        ArrayList<Tuile> tuiles1 = getTuilesAdjacentes(posL, posC);
+        int[] pos;
+        for (Tuile t : tuiles) {
+            pos = getJoueur().getGrille().getPosFromTuile(t);
+            for (Tuile t1 : getTuilesAdjacentes(pos[0], pos[1])) {
+                if (!tuiles1.contains(t1)) {
+                    tuiles1.add(t1);
+                }
+            }
+        }
+        return tuiles1;
+    }
+
+    public ArrayList<Tuile> getTuilesAdjacentes(int posL, int posC) {//navigateur
+        Aventurier joueur = getJoueur();
+        ArrayList<Tuile> tuiles1 = new ArrayList<>();
+
+        // A OPTIMISER...
+        ArrayList<Tuile> tuilesPossibles = new ArrayList<>();
+        Tuile tuile = joueur.getGrille().getTuile(posL, posC + 1);
+        if (tuile != null && (tuile.getEtat() == Utils.EtatTuile.INONDEE || tuile.getEtat() == Utils.EtatTuile.ASSECHEE)) { // tuile EST
+            tuilesPossibles.add(tuile);
+        }
+        tuile = joueur.getGrille().getTuile(posL + 1, posC);
+        if (tuile != null && (tuile.getEtat() == Utils.EtatTuile.INONDEE || tuile.getEtat() == Utils.EtatTuile.ASSECHEE)) { // tuile SUD
+            tuilesPossibles.add(tuile);
+        }
+        tuile = joueur.getGrille().getTuile(posL, posC - 1);
+        if (tuile != null && (tuile.getEtat() == Utils.EtatTuile.INONDEE || tuile.getEtat() == Utils.EtatTuile.ASSECHEE)) { // tuile OUEST
+            tuilesPossibles.add(tuile);
+        }
+        tuile = joueur.getGrille().getTuile(posL - 1, posC);
+        if (tuile != null && (tuile.getEtat() == Utils.EtatTuile.INONDEE || tuile.getEtat() == Utils.EtatTuile.ASSECHEE)) { // tuile NORD
+            tuilesPossibles.add(tuile);
+        }
+        return tuilesPossibles;
+    }
+
 }

@@ -318,8 +318,7 @@ public class PlateauJeu extends Observe {
         actionSpeciale = new BoutonPerso(BoutonPerso.ACTION_SPECIALE, BoutonPerso.SQUARE);
         panelCP.add(actionSpeciale, BorderLayout.CENTER);
         actionSpeciale.addMouseListener(mlBouton);
-        
-        
+
         // deck carte tresor :
         panelGauche = new JPanel();
         panelGauche.setOpaque(false);
@@ -369,16 +368,21 @@ public class PlateauJeu extends Observe {
         panelAb.add(finirTour);
         panelDroite.add(panelAb, BorderLayout.EAST);
         panelCP.add(panelDroite, BorderLayout.EAST);
+        desactiverBouton(actionSpeciale);
 
         if (aventurier.getPointAction() > 0) {
             activerBouton(deplacer);
             activerBouton(assecher);
             activerBouton(donnerCarte);
             activerBouton(gagnerTresor);
-            //activerBouton(actionSpeciale);
+            activerBouton(actionSpeciale);
+        }
+        if(aventurier.hasFullDeck()){
+            desactiverBouton(finirTour);
+        }else{
+            activerBouton(finirTour);
         }
         activerBouton(abandonner);
-        activerBouton(finirTour);
     }
 
     public void updateJ1(Aventurier joueur1) {
@@ -669,9 +673,19 @@ public class PlateauJeu extends Observe {
                             m.type = TypesMessages.ABANDONNER;
                             notifierObservateur(m);
                         }
-                        if (bouton == actionSpeciale){
+                        if (bouton == actionSpeciale) {
                             Message m = new Message();
                             m.type = TypesMessages.ACTION_SPECIALE;
+                            notifierObservateur(m);
+                        }
+                        if (bouton == donnerCarte) {
+                            Message m = new Message();
+                            m.type = TypesMessages.DONNER_CARTE;
+                            notifierObservateur(m);
+                        }
+                        if (bouton == gagnerTresor) {
+                            Message m = new Message();
+                            m.type = TypesMessages.GAGNER_TRESOR;
                             notifierObservateur(m);
                         }
                     } else {
@@ -698,11 +712,14 @@ public class PlateauJeu extends Observe {
                                 notifierObservateur(m);
                             }
                         } else {
+                            Message m = new Message();
+                            m.type = TypesMessages.CARTE;
+                            m.destinataire = bouton.getNomCarte();
+                            notifierObservateur(m);
                             if (me.getButton() == MouseEvent.BUTTON3) {
                                 PopupMenu popup = new PopupMenu(bouton.getNomCarte(), PlateauJeu.this);
                                 popup.afficher(bouton, me.getX(), me.getY());
                             }
-
                         }
                     }
                 }
@@ -859,4 +876,6 @@ public class PlateauJeu extends Observe {
         window.setSize(dim.width, dim.height);
         window.setCursor(Cursor.getDefaultCursor());
     }
+
+
 }

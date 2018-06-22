@@ -22,6 +22,7 @@ public enum TypesMessages {
     AFFICHER_CASES_DEPLACEMENT,
     JOUEUR,
     HELICOPTERE,
-    ACTION_SPECIALE
+    ACTION_SPECIALE,
+    CARTE
     
 }
