@@ -54,7 +54,6 @@ public class FinPartie extends Observe {
                 System.exit(0);
             }
         });
-        window.setVisible(true);
 
     }
 
@@ -71,6 +70,10 @@ public class FinPartie extends Observe {
         } else {
             etatPartie.setText("Dommage ! Vous Avez perdu!");
         }
+    }
+    
+    public void afficher(boolean b){
+            window.setVisible(b);
     }
 
 }

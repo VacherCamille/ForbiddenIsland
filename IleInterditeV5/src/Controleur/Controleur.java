@@ -79,6 +79,8 @@ public class Controleur implements Observateur {
         ecranPrincipal = new EcranPrincipal();
         ecranPrincipal.addObservateur(this);
         ecranPrincipal.afficher();
+        fin = new FinPartie(false);
+        fin.addObservateur(this);
     }
 
     @Override
@@ -196,11 +198,14 @@ public class Controleur implements Observateur {
             case AFFICHER_CASES_DEPLACEMENT:
                 plateauJeu.updateGrille(grille, listeJoueurs);
                 ArrayList<Tuile> tuilesDep;
+                tuilesDep = null;
                 if (!msg.cardMode) {
                     tuilesDep = joueurActuel().getTuilesDeplacement();
                 } else {
-                    tuilesDep = grille.getTuilesInondeesAssechees();
-                    this.setModeCarte(true);
+                    if (!prendreHelicoptere(null)) {
+                        tuilesDep = grille.getTuilesInondeesAssechees();
+                        this.setModeCarte(true);
+                    }
                 }
                 for (Tuile tuile : tuilesDep) {
                     int[] pos = grille.getPosFromTuile(tuile);
@@ -325,16 +330,13 @@ public class Controleur implements Observateur {
                 plateauJeu.updateDefausseInondation(defausseInondation);
                 plateauJeu.refresh();
 
-                if (Perdu()) {
-                    fin = new FinPartie(!Perdu());
-                    fin.addObservateur(this);
-                    System.out.println("perdu");
-                }
+                Perdu();
                 break;
 
             case ABANDONNER:
                 plateauJeu.fermer();
                 ecranPrincipal.afficher();
+                fin.afficher(false);
                 break;
         }
     }
@@ -399,10 +401,10 @@ public class Controleur implements Observateur {
                 pileTresor.add(carte);
             }
         }
-        if (aventurier.getNbCartes()>5){
-            
+        if (aventurier.getNbCartes() > 5) {
+
         }
-        
+
     }
     
     public void jeterCarte(Aventurier aventurier,CarteTresor carte){
@@ -610,6 +612,9 @@ public class Controleur implements Observateur {
         if (niveauDEau.getWaterLevel() == 0) {
             flag = true;
         }
+        if (flag) {
+            finirPartie(false);
+        }
         return flag;
     }
 
@@ -620,6 +625,28 @@ public class Controleur implements Observateur {
                 a.seDeplacer(grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[0], grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[1]);
             }
         }
+    }
+
+    public boolean prendreHelicoptere(Aventurier joueur) {
+        boolean toutLesTresors = true;
+
+        for (Tresor t : collectionTresor.keySet()) {
+            if (collectionTresor.get(t).equals(false)) {
+                toutLesTresors = false;
+            }
+        }
+
+        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs - 1 && toutLesTresors == true) {
+            finirPartie(true);
+            return true;
+        }
+        return false;
+    }
+
+    public void finirPartie(boolean b) {
+        plateauJeu.fermer();
+        fin.setEtat(b);
+        fin.afficher(true);
     }
 
 }
