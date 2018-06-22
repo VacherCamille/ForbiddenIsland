@@ -492,7 +492,7 @@ public class PlateauJeu extends Observe {
                                 popup.afficher(bouton,me.getX(),me.getY());
                             }else{
                                 Message m = new Message();
-                                m.type = TypesMessages.AFFICHER_CASES_DEPLACEMENT;
+                                m.type = TypesMessages.HELICOPTERE;
                                 m.cardMode = true;
                                 notifierObservateur(m);
                             }

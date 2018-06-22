@@ -20,5 +20,7 @@ public enum TypesMessages {
     ABANDONNER,
     AFFICHER_CASES_ASSECHEMENT,
     AFFICHER_CASES_DEPLACEMENT,
-    JOUEUR
+    JOUEUR,
+    HELICOPTERE
+    
 }

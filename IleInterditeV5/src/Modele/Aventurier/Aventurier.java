@@ -133,4 +133,8 @@ public class Aventurier {
     public ArrayList<Tuile> getTuilesAssechement() {
         return role.getInondeesAdjacentes();
     }
+    
+    public Grille getGrille(){
+        return this.getPosition().getGrille();
+    }
 }
