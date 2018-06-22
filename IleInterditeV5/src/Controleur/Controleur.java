@@ -503,4 +503,56 @@ public class Controleur implements Observateur {
         System.out.println("\tNiveau d'eau : " + niveauDEau.getWaterLevel());
         System.out.println();
     }
+    
+     public boolean Perdu() {//rajouter message
+        boolean flag = false;
+        //si les 2 tuile d'un trésor sombrent avant d'avoir recup le trésor
+        for (Tresor t : collectionTresor.keySet()) {
+            if (!collectionTresor.get(t)) {
+                switch (t) {
+                    case PIERRE:
+                        if (grille.getTuileFromName("Le Temple de la Lune").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Temple du Soleil").getEtat() == EtatTuile.COULEE) {
+                            flag = true;
+                        }
+                        break;
+                    case STATUE:
+                        if (grille.getTuileFromName("Le Jardin des Murmures").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Jardin des Hurlements").getEtat() == EtatTuile.COULEE) {
+                            flag = true;
+                        }
+                        break;
+                    case CRISTAL:
+                        if (grille.getTuileFromName("La Caverne du Brasier").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("La Caverne des Ombres").getEtat() == EtatTuile.COULEE) {
+                            flag = true;
+                        }
+                        break;
+                    case CALICE:
+                        if (grille.getTuileFromName("Le Palais de Corail").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Palais des Marees").getEtat() == EtatTuile.COULEE) {
+                            flag = true;
+                        }
+                        break;
+                }
+            }
+        }
+
+        //si l'heliport sombre
+        if (grille.getTuileFromName("Heliport").getEtat() == EtatTuile.COULEE) {
+            flag = true;
+        }
+
+        //si un pion sur une tuile coulee ne peut pas nager sur une autre tuile 
+        for (String s : joueurs.keySet()) {
+            Aventurier j = joueurs.get(s);
+            if (j.getTuile().getEtat() == EtatTuile.COULEE) {
+                if (j.getTuilesDeplacement().isEmpty()) {
+                    flag = true;
+                }
+            }
+        }
+        //si le marqueur atteint la mort
+        if (niveauDEau.getWaterLevel() == 0) {
+            flag = true;
+        }
+        return flag;
+    }
+
 }
