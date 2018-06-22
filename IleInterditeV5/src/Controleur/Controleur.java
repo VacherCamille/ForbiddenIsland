@@ -349,6 +349,10 @@ public class Controleur implements Observateur {
                 pileTresor.add(carte);
             }
         }
+        if (aventurier.getNbCartes()>5){
+            
+        }
+        
     }
     
     private void setModeCarte(boolean b) {

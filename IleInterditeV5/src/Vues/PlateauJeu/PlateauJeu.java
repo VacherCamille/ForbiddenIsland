@@ -13,21 +13,33 @@ import Modele.CarteTresor.CarteTresor;
 import Modele.Divers.CarteInondation;
 import Modele.Plateau.Grille;
 import Vues.EcranPrincipal.JPanelBackground;
+import Vues.PlateauJeu.PopupMenu.MousePopupListener;
+import Vues.PlateauJeu.PopupMenu.PopupPrintListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 /**
  *
@@ -453,6 +465,7 @@ public class PlateauJeu extends Observe {
     }
     
     private void initListener() {
+        JPopupMenu popup;
         mlBouton = new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {}
@@ -494,10 +507,14 @@ public class PlateauJeu extends Observe {
                             m.type = TypesMessages.AFFICHER_CASES_ASSECHEMENT;
                             m.cardMode = true;
                             notifierObservateur(m);
+                        } else if(bouton.getNomCarte().equals("Calice de l'Onde")||bouton.getNomCarte().equals("Cristal Ardent")||bouton.getNomCarte().equals("Statue de Zéphyr")||bouton.getNomCarte().equals("Pierre Sacrée")){
+                            PopupMenu popup = new PopupMenu();
+                            popup.afficher(bouton,me.getX(),me.getY());
                         }
                     }
                 }
             }
+            
 
             @Override
             public void mouseReleased(MouseEvent me) {
