@@ -153,12 +153,91 @@ public class PlateauJeu extends Observe {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                Message m = new Message();
-                
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
+                Message m = new Message();
+                m.type = TypesMessages.JOUEUR;
+                m.destinataire = "1";
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        
+        panelJ2H.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Message m = new Message();
+                m.type = TypesMessages.JOUEUR;
+                m.destinataire = "2";
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        
+        panelJ3H.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Message m = new Message();
+                m.type = TypesMessages.JOUEUR;
+                m.destinataire = "3";
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        
+        panelJ4H.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Message m = new Message();
+                m.type = TypesMessages.JOUEUR;
+                m.destinataire = "4";
             }
 
             @Override
