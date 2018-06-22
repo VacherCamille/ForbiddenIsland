@@ -166,7 +166,7 @@ public class PlateauJeu extends Observe {
             public void mousePressed(MouseEvent e) {
                 Message m = new Message();
                 m.type = TypesMessages.JOUEUR;
-                m.destinataire = "1";
+                m.destinataire = labelNomJ1.getText();
                 notifierObservateur(m);
             }
 
@@ -193,7 +193,7 @@ public class PlateauJeu extends Observe {
             public void mousePressed(MouseEvent e) {
                 Message m = new Message();
                 m.type = TypesMessages.JOUEUR;
-                m.destinataire = "2";
+                m.destinataire = labelNomJ2.getText();
                 notifierObservateur(m);
 
             }
@@ -221,7 +221,7 @@ public class PlateauJeu extends Observe {
             public void mousePressed(MouseEvent e) {
                 Message m = new Message();
                 m.type = TypesMessages.JOUEUR;
-                m.destinataire = "3";
+                m.destinataire = labelNomJ3.getText();
                 notifierObservateur(m);
 
             }
@@ -249,7 +249,7 @@ public class PlateauJeu extends Observe {
             public void mousePressed(MouseEvent e) {
                 Message m = new Message();
                 m.type = TypesMessages.JOUEUR;
-                m.destinataire = "4";
+                m.destinataire = labelNomJ4.getText();
                 notifierObservateur(m);
 
             }
@@ -317,7 +317,9 @@ public class PlateauJeu extends Observe {
         // bouton action spéciale
         actionSpeciale = new BoutonPerso(BoutonPerso.ACTION_SPECIALE, BoutonPerso.SQUARE);
         panelCP.add(actionSpeciale, BorderLayout.CENTER);
-
+        actionSpeciale.addMouseListener(mlBouton);
+        
+        
         // deck carte tresor :
         panelGauche = new JPanel();
         panelGauche.setOpaque(false);
@@ -373,7 +375,7 @@ public class PlateauJeu extends Observe {
             activerBouton(assecher);
             activerBouton(donnerCarte);
             activerBouton(gagnerTresor);
-            activerBouton(actionSpeciale);
+            //activerBouton(actionSpeciale);
         }
         activerBouton(abandonner);
         activerBouton(finirTour);
@@ -665,6 +667,11 @@ public class PlateauJeu extends Observe {
                         if (bouton == abandonner) {
                             Message m = new Message();
                             m.type = TypesMessages.ABANDONNER;
+                            notifierObservateur(m);
+                        }
+                        if (bouton == actionSpeciale){
+                            Message m = new Message();
+                            m.type = TypesMessages.ACTION_SPECIALE;
                             notifierObservateur(m);
                         }
                     } else {

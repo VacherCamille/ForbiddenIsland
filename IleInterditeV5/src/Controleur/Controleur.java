@@ -222,6 +222,7 @@ public class Controleur implements Observateur {
                     joueurActuel().seDeplacer(msg.posL, msg.posC);
                     joueurActuel().utiliserPA();
                 } else {
+                    System.out.println(joueurDeplace.getNomAventurier());
                     joueurDeplace.seDeplacer(msg.posL, msg.posC);
                     this.setModeCarte(false);
                     defausseTresor.add(joueurActuel().removeOccurenceCarte("Helicoptere"));
@@ -336,28 +337,15 @@ public class Controleur implements Observateur {
                 break;
 
             case JOUEUR:
-                                    System.out.println("zzzz");
+                System.out.println(msg.destinataire);
                 if (mode_carte) {//helicoptere
-                    int i = 0;
-                    switch (msg.destinataire) {
-                        case "1":
-                            i = 0;
-                            break;
-                        case "2":
-                            i = 1;
-                            break;
-                        case "3":
-                            i = 2;
-                            break;
-                        case "4":
-                            i = 3;
-                    }
-                    joueurDeplace = joueurs.get(i);
+
+                    joueurDeplace = joueurs.get(msg.destinataire);
                     Message m = new Message();
                     m.type = TypesMessages.AFFICHER_CASES_DEPLACEMENT;
                     m.cardMode = true;
                     traiterMessage(m);
-                    this.setModeCarte(false);
+
                 } else {//donnercarte
 
                 }
