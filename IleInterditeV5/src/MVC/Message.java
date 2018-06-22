@@ -16,7 +16,6 @@ public class Message {
     public String destinateur;
     
     // DEMARRER_PARTIE
-    public int nbJoueurs;
     public ArrayList<String> listeJoueurs;
     public String difficulte;
     
@@ -27,4 +26,7 @@ public class Message {
     // SE_DEPLACER / ASSECHER
     public int posL;
     public int posC;
+    
+    // HELICOPTERE / SACS DE SABLE
+    public boolean cardMode = false;
 }

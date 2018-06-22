@@ -5,8 +5,6 @@
  */
 package Modele.Aventurier;
 
-import Modele.CarteTresor.CarteTresor;
-import Modele.Plateau.Tuile;
 import Util.Utils;
 
 /**
@@ -17,23 +15,5 @@ public class Messager extends CarteAventurier {
     
     public Messager() {
         super("Messager", Utils.Pion.ORANGE);
-    }
-    
-    @Override
-    public boolean donnerCarte(Aventurier destinataire, String nomCarte) {
-        if (destinataire.hasFullDeck()) {
-            System.out.println("\033[31m [ ERREUR DON DE CARTE : DECK DESTINATAIRE PLEIN");
-            return false;
-        }
-        if (getJoueur() != null && getJoueur().getPointAction() > 0) {
-                CarteTresor carteDonnee = getJoueur().getCarteTresorFromName(nomCarte);
-                getJoueur().removeCarteTresor(carteDonnee);
-                destinataire.addCarteTresor(carteDonnee);
-                System.out.println("\033[32m [ CARTE TRANSFEREE ! ]");
-                return true;
-        } else {
-            System.out.println("\033[31m [ ERREUR DON DE CARTE : PAS ASSEZ DE PA ! ]");
-            return false;
-        }
     }
 }

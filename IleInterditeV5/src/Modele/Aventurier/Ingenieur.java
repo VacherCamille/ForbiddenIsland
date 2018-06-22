@@ -12,6 +12,7 @@ import Util.Utils;
  * @author dieuaida
  */
 public class Ingenieur extends CarteAventurier {
+    
     public Ingenieur() {
         super("Ingénieur", Utils.Pion.ROUGE);
     }

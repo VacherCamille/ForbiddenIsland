@@ -40,7 +40,7 @@ public class Parameters {
         "Le Rocher Fantome,null,null",
         "La Caverne du Brasier,null,CRISTAL",
         "Le Temple du Soleil,null,PIERRE",
-        "Le Temple de la Lune,null,PIERRE",
+        "Le Temple de La Lune,null,PIERRE",
         "Le Palais des Marees,null,CALICE",
         "Le Val du Crepuscule,null,null",
         "La Tour du Guet,null,null",

@@ -41,7 +41,6 @@ public class NivEau {
         this.indexLevel += 1;
     }
     
-    
     // gameOver pour plus tard...
     public boolean isGameOver() {
         return indexLevel == 9;

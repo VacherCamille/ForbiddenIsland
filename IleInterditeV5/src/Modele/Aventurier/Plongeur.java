@@ -16,11 +16,10 @@ import java.util.HashSet;
  * @author dieuaida
  */
 public class Plongeur extends CarteAventurier {
-
+    
     public Plongeur() {
         super("Plongeur", Utils.Pion.VIOLET);
     }
-
     
     @Override
     public ArrayList<Tuile> getTuilesDeplacement() {

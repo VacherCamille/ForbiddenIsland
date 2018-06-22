@@ -12,25 +12,20 @@ import Modele.Aventurier.Aventurier;
  * @author dieuaida
  */
 public class Position {
-
     private int ligne;
     private int colonne;
     private Grille grille;
     private Aventurier aventurier;
-
+    
     public Position(Grille grille, Aventurier aventurier, int ligne, int colonne) {
         this.grille = grille;
         this.aventurier = aventurier;
         this.ligne = ligne;
         this.colonne = colonne;
     }
-
-    public Position(int ligne, int colonne) {
-        this.ligne = ligne;
-        this.colonne = colonne;
-    }
-
+    
     // === GETTERS & SETTERS ===================================================
+
     public int getLigne() {
         return ligne;
     }
@@ -54,7 +49,14 @@ public class Position {
     public void setColonne(int colonne) {
         this.colonne = colonne;
     }
-
+    
+    // === MODE POSITION NEUTRE (POUR PLONGEUR) ================================
+    
+    public Position(int ligne, int colonne) {
+        this.ligne = ligne;
+        this.colonne = colonne;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         Position pos = (Position) obj;
@@ -68,10 +70,10 @@ public class Position {
         hash = 67 * hash + this.colonne;
         return hash;
     }
-
+    
     // === UTILITAIRE ==========================================================
+    
     public Tuile getTuile() {
         return grille.getTuile(ligne, colonne);
     }
-
 }

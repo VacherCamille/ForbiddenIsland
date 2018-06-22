@@ -17,67 +17,68 @@ import java.util.ArrayList;
  * @author dieuaida
  */
 public class Explorateur extends CarteAventurier {
-
+    
     public Explorateur() {
         super("Explorateur", Pion.VERT);
     }
-
+    
     // === SE DEPLACER =========================================================
-    // rajout des cases diagonales
+    
     @Override
     public ArrayList<Tuile> getTuilesDeplacement() {
         int posL = getJoueur().getPosition().getLigne();
         int posC = getJoueur().getPosition().getColonne();
 
-        ArrayList<Tuile> tuilesdeplacement = super.getTuilesDeplacement(); // tuiles JOUEUR, EST, SUD, OUEST, NORD
-        Grille grille = getJoueur().getGrille();
+        ArrayList<Tuile> tuilesDeplacement = super.getTuilesDeplacement(); // tuiles JOUEUR, EST, SUD, OUEST, NORD
+        Grille grille = getJoueur().getEnvironnement();
 
         Tuile tuile = grille.getTuile(posL - 1, posC - 1);
         if (tuile != null && (tuile.getEtat() == EtatTuile.ASSECHEE || tuile.getEtat() == EtatTuile.INONDEE)) { // tuile NORD-OUEST
-            tuilesdeplacement.add(tuile);
+            tuilesDeplacement.add(tuile);
         }
         tuile = grille.getTuile(posL - 1, posC + 1);
         if (tuile != null && (tuile.getEtat() == EtatTuile.ASSECHEE || tuile.getEtat() == EtatTuile.INONDEE)) { // tuile NORD-EST
-            tuilesdeplacement.add(tuile);
+            tuilesDeplacement.add(tuile);
         }
         tuile = grille.getTuile(posL + 1, posC + 1);
         if (tuile != null && (tuile.getEtat() == EtatTuile.ASSECHEE || tuile.getEtat() == EtatTuile.INONDEE)) { // tuile SUD-EST
-            tuilesdeplacement.add(tuile);
+            tuilesDeplacement.add(tuile);
         }
         tuile = grille.getTuile(posL + 1, posC - 1);
         if (tuile != null && (tuile.getEtat() == EtatTuile.ASSECHEE || tuile.getEtat() == EtatTuile.INONDEE)) { // tuile SUD-OUEST
-            tuilesdeplacement.add(tuile);
+            tuilesDeplacement.add(tuile);
         }
-        return tuilesdeplacement;
+        return tuilesDeplacement;
     }
-
+    
     // === ASSECHEMENT =========================================================
+    
     // rajout des diagonales
     @Override
     public ArrayList<Tuile> getInondeesAdjacentes() {
         int posL = getJoueur().getPosition().getLigne();
         int posC = getJoueur().getPosition().getColonne();
-
+        
         ArrayList<Tuile> tuilesInondees = super.getInondeesAdjacentes(); // tuiles JOUEUR, EST, SUD, OUEST, NORD
-        Grille grille = getJoueur().getGrille();
-
-        Tuile tuile = grille.getTuile(posL - 1, posC - 1);
+        Grille grille = getJoueur().getEnvironnement();
+        
+        Tuile tuile = grille.getTuile(posL-1, posC-1);
         if (tuile != null && tuile.getEtat() == EtatTuile.INONDEE) { // tuile NORD-OUEST
             tuilesInondees.add(tuile);
         }
-        tuile = grille.getTuile(posL - 1, posC + 1);
+        tuile = grille.getTuile(posL-1, posC+1);
         if (tuile != null && tuile.getEtat() == EtatTuile.INONDEE) { // tuile NORD-EST
             tuilesInondees.add(tuile);
         }
-        tuile = grille.getTuile(posL + 1, posC + 1);
+        tuile = grille.getTuile(posL+1, posC+1);
         if (tuile != null && tuile.getEtat() == EtatTuile.INONDEE) { // tuile SUD-EST
             tuilesInondees.add(tuile);
         }
-        tuile = grille.getTuile(posL + 1, posC - 1);
+        tuile = grille.getTuile(posL+1, posC-1);
         if (tuile != null && tuile.getEtat() == EtatTuile.INONDEE) { // tuile SUD-OUEST
             tuilesInondees.add(tuile);
         }
-
+        
         return tuilesInondees;
     }
 }

@@ -7,7 +7,6 @@ package Controleur;
 
 import MVC.Message;
 import MVC.Observateur;
-import MVC.TypesMessages;
 import Modele.Aventurier.Aventurier;
 import Modele.Aventurier.CarteAventurier;
 import Modele.Aventurier.Explorateur;
@@ -26,74 +25,69 @@ import Modele.Divers.NivEau;
 import Modele.Plateau.Grille;
 import Modele.Plateau.Position;
 import Modele.Plateau.Tuile;
-import Musique.SonLauncher;
 import Util.Parameters;
 import Util.Utils;
 import Util.Utils.EtatTuile;
 import Util.Utils.Pion;
 import Util.Utils.Tresor;
-import Vues.Ecranprincipal.EcranPrincipal;
-import Vues.Plateaujeu.PlateauJeu;
+import Vues.EcranPrincipal.EcranPrincipal;
+import Vues.PlateauJeu.PlateauJeu;
+import Vues.PlateauJeu.TuileGraphique;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.border.LineBorder;
 
 /**
  *
- * @author Aymerick
+ * @author Aymerick_PC
  */
 public class Controleur implements Observateur {
-    // Message
-    // DEMARRER_PARTIE:
-
+    // Variables Message
     private int nbJoueurs;
     private ArrayList<String> listeJoueurs;
-    private int indexOrdre = 0;
     private String difficulte;
-    private String actionCourante;
-    private boolean actionPrecAss = false;
+    
     // Vues
     private final EcranPrincipal ecranPrincipal;
     private PlateauJeu plateauJeu;
-
-    // Modele
+    
+    // Modèle :
     private Grille grille;
-
-    private HashMap<Utils.Tresor, Boolean> collectionTresor; // les trésors récupérés ou non
-
+    private int indexOrdre = 0;
+    
+    private HashMap<Tresor, Boolean> collectionTresor;
+    
     private ArrayList<CarteInondation> pileInondation;
     private ArrayList<CarteInondation> defausseInondation;
     private ArrayList<CarteTresor> pileTresor;
     private ArrayList<CarteTresor> defausseTresor;
     private ArrayList<CarteAventurier> pileAventurier;
-
+    
     private HashMap<String, Aventurier> joueurs;
+    
     private NivEau niveauDEau;
-    private SonLauncher son;
-
+    
+    // Variables utilitaires :
+    private boolean mode_carte = false;
+    
     public Controleur() {
         ecranPrincipal = new EcranPrincipal();
         ecranPrincipal.addObservateur(this);
         ecranPrincipal.afficher();
-        son = new SonLauncher();
-        //son.playSound();
-        son.music();
     }
 
     @Override
     public void traiterMessage(Message msg) {
-        Aventurier destinateur;
-        int posL, posC;
-
         switch (msg.type) {
             case DEMARRER_PARTIE:
-                son.stopSound();
                 ecranPrincipal.fermer();
-
-                // récupération des données Message
+                
+                // récupération des données message :
                 listeJoueurs = msg.listeJoueurs;
                 difficulte = msg.difficulte;
                 nbJoueurs = listeJoueurs.size();
-
+                
                 // Initialisation des Collections :
                 collectionTresor = new HashMap<>();
                 pileInondation = new ArrayList<>();
@@ -102,16 +96,17 @@ public class Controleur implements Observateur {
                 defausseTresor = new ArrayList<>();
                 pileAventurier = new ArrayList<>();
                 joueurs = new HashMap<>();
-
+                
                 // === INSTALLATION (cf. règles du jeu) ========================
+                
                 // 1. Créer l'Île Interdite :
                 grille = new Grille();
-
+                
                 // 2. Placer les trésors :
                 for (Tresor tresor : Tresor.values()) {
                     collectionTresor.put(tresor, Boolean.FALSE);
                 }
-
+                
                 // 3. Séparer les cartes :
                 // Carte Inondation
                 for (String args : Parameters.tuilesJeu) {
@@ -120,7 +115,7 @@ public class Controleur implements Observateur {
                     pileInondation.add(new CarteInondation(nomCarteI));
                 }
                 Utils.melangerInondation(pileInondation);
-
+                
                 // Carte Tresor
                 for (Tresor tresor : Tresor.values()) {
                     for (int i = 0; i < 5; i++) {
@@ -131,10 +126,9 @@ public class Controleur implements Observateur {
                     pileTresor.add(new MonteeEau());
                     pileTresor.add(new Helicoptere());
                 }
-                pileTresor.add(new SacSable());
-                pileTresor.add(new SacSable());
+                pileTresor.add(new SacSable()); pileTresor.add(new SacSable());
                 Utils.melangerTresor(pileTresor);
-
+                
                 // Carte Aventurier
                 pileAventurier.add(new Explorateur());
                 pileAventurier.add(new Ingenieur());
@@ -143,12 +137,12 @@ public class Controleur implements Observateur {
                 pileAventurier.add(new Pilote());
                 pileAventurier.add(new Plongeur());
                 Utils.melangerAventuriers(pileAventurier);
-
+                
                 // 4. L'Île commence à sombrer :
                 for (int i = 0; i < 6; i++) {
                     this.tirerCarteInondation();
                 }
-
+                
                 // 5. Les aventuriers débarquent :
                 // Création des aventuriers :
                 for (int i = 0; i < nbJoueurs; i++) {
@@ -156,14 +150,14 @@ public class Controleur implements Observateur {
                     CarteAventurier role = pileAventurier.get(i);
                     Aventurier nouveauJoueur = new Aventurier(nomAventurier, role);
                     role.setJoueur(nouveauJoueur);
-
+                    
                     Pion pionJoueur = nouveauJoueur.getPion();
                     int[] posJoueur = grille.getPosFromTuile(grille.getTuileFromSpawnPion(pionJoueur));
                     this.addPosition(nouveauJoueur, posJoueur[0], posJoueur[1]);
-
+                    
                     joueurs.put(nomAventurier, nouveauJoueur);
                 }
-
+                
                 // 6. Distribuer les cartes Trésor :
                 for (String nomJoueur : listeJoueurs) {
                     Aventurier joueur = joueurs.get(nomJoueur);
@@ -171,234 +165,181 @@ public class Controleur implements Observateur {
                         this.tirerCarteTresorDemarrage(joueur);
                     }
                 }
-
+                
                 // 7. Déterminer le niveau d'eau :
                 niveauDEau = new NivEau(difficulte);
-
+                
                 // 8. Finalisation :
-                plateauJeu = new Vues.Plateaujeu.PlateauJeu(nbJoueurs);
+                plateauJeu = new PlateauJeu(nbJoueurs);
                 plateauJeu.addObservateur(this);
-                plateauJeu.initGrille(grille, listeJoueurs);
-                plateauJeu.updateCurrentPlayer(joueurs.get(listeJoueurs.get(indexOrdre)),niveauDEau.getWaterLevel());
-                plateauJeu.updatePileTresor(defausseTresor);
-                plateauJeu.updatePileInondation(defausseInondation);
+                
+                plateauJeu.updateGrille(grille, listeJoueurs);
+                plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
+                plateauJeu.updateDefausseTresor(defausseTresor);
+                plateauJeu.updateDefausseInondation(defausseInondation);
                 plateauJeu.updateJ1(joueurs.get(listeJoueurs.get(0)));
                 plateauJeu.updateJ2(joueurs.get(listeJoueurs.get(1)));
-                if (nbJoueurs >= 3) {
-                    plateauJeu.updateJ3(joueurs.get(listeJoueurs.get(2)));
-                }
-                if (nbJoueurs == 4) {
-                    plateauJeu.updateJ4(joueurs.get(listeJoueurs.get(3)));
-                }
+                if (nbJoueurs >= 3) plateauJeu.updateJ3(joueurs.get(listeJoueurs.get(2)));
+                if (nbJoueurs == 4) plateauJeu.updateJ4(joueurs.get(listeJoueurs.get(3)));
+                
                 plateauJeu.afficher();
-
-                System.out.println("INITIALISATION PARTIE TERMINEE !");
-                this.verifEtatPartie(); // test
-                break;
-
-            // === ACTIONS ==================
-            case DONNER_CARTE:
-                //penser à donner carte
-                destinateur = joueurs.get(msg.destinateur);
-                Aventurier destinataire = joueurs.get(msg.destinataire);
-                if (destinateur.donnerCarte(destinataire, msg.nomCarteT)) {
-                    destinateur.utiliserPA();
-                }
-                this.verifDeckTresorJoueurs(); // test
                 break;
                 
-             case GAGNER_TRESOR:
-                destinateur = joueurs.get(msg.destinateur); 
-                destinateur.getRole().gagnerTresor(destinateur);
-                destinateur.utiliserPA();
-                
-                break;    
-
             case AFFICHER_CASES_DEPLACEMENT:
-                for (String s : joueurCourant().getRole().getJoueursTuile()) {
-                    System.out.println(s);
+                plateauJeu.updateGrille(grille, listeJoueurs);
+                ArrayList<Tuile> tuilesDep;
+                if (!msg.cardMode) {
+                    tuilesDep = joueurActuel().getTuilesDeplacement();
+                } else {
+                    tuilesDep = grille.getTuilesInondeesAssechees();
+                    this.setModeCarte(true);
                 }
-                plateauJeu.resetHlight();
-                for (Tuile t : joueurCourant().getTuilesDeplacement()) {
-                    int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
+                for (Tuile tuile : tuilesDep) {
+                    int[] pos = grille.getPosFromTuile(tuile);
+                    TuileGraphique tg = plateauJeu.getTuileGraphique(pos[0], pos[1]);
+                    plateauJeu.activerTuile(tg, "déplacer");
+                    tg.setBorder(new LineBorder(Color.GREEN, 6));
                 }
-                actionCourante = "deplacement";
+                plateauJeu.refresh();
                 break;
-
+            
+            case SE_DEPLACER:
+                joueurActuel().seDeplacer(msg.posL, msg.posC);
+                if (!mode_carte) {
+                    joueurActuel().utiliserPA();
+                } else {
+                    this.setModeCarte(false);
+                    defausseTresor.add(joueurActuel().removeOccurenceCarte("Helicoptere"));
+                    plateauJeu.updateDefausseTresor(defausseTresor);
+                }
+                plateauJeu.updateGrille(grille, listeJoueurs);
+                plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
+                plateauJeu.refresh();
+                break;
+                
             case AFFICHER_CASES_ASSECHEMENT:
-                plateauJeu.resetHlight();
-                for (Tuile t : joueurCourant().getTuilesAssechement()) {
-                    int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
+                plateauJeu.updateGrille(grille, listeJoueurs);
+                ArrayList<Tuile> tuilesAss;
+                if (!msg.cardMode) {
+                    tuilesAss = joueurActuel().getTuilesAssechement();
+                } else {
+                    tuilesAss = grille.getTuilesInondees();
+                    this.setModeCarte(true);
                 }
-                actionCourante = "assechement";
-                break;
-
-            case POSITION:
-                plateauJeu.resetHlight();
-                switch (actionCourante) {
-                    case "deplacement":
-                        if (joueurCourant().getPointAction() > 0) {
-                            if (joueurCourant().seDeplacer(msg.posL, msg.posC)) {
-                                joueurCourant().utiliserPA();
-                            }
-                        }
-                        break;
-
-                    case "assechement":
-                        if (joueurCourant().getRole().getNomRole().equals("Ingénieur")) {
-                            if (joueurCourant().getPointAction() > 0) {
-                                if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
-                                    if (!actionPrecAss) {
-                                        if (!joueurCourant().getTuilesAssechement().isEmpty()) {
-                                            for (Tuile t : joueurCourant().getTuilesAssechement()) {
-                                                int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                                                plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
-                                            }
-                                            actionPrecAss = true;
-                                        } else {
-                                            joueurCourant().utiliserPA();
-                                        }
-                                    } else {
-                                        joueurCourant().utiliserPA();
-                                        actionPrecAss = false;
-                                    }
-                                }
-                            }
-                        } else {
-                            if (joueurCourant().getPointAction() > 0) {
-                                if (joueurCourant().assecherTuile(msg.posL, msg.posC)) {
-                                    joueurCourant().utiliserPA();
-                                }
-                            }
-                        }
-                        break;
-                    case "sacSable":
-                        joueurCourant().assecheSacSable(msg.posL, msg.posC);
-                        break;
-                    case "helicoptere":
-//                        joueurCourant().utiliserHelicoptere(,posL, msg.posC);
+                for (Tuile tuile : tuilesAss) {
+                    int[] pos = grille.getPosFromTuile(tuile);
+                    TuileGraphique tg = plateauJeu.getTuileGraphique(pos[0], pos[1]);
+                    plateauJeu.activerTuile(tg, "assécher");
+                    tg.setBorder(new LineBorder(Color.CYAN, 6));
                 }
+                plateauJeu.refresh();
                 break;
-
-            case CARTE_SABLE:
-                plateauJeu.resetHlight();
-                for (Tuile t : grille.getToutesTuilesInondees()) {
-                    int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                    plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
+                
+            case ASSECHER:
+                joueurActuel().assecherTuile(msg.posL, msg.posC);
+                if (!mode_carte) {
+                    joueurActuel().utiliserPA();
+                } else {
+                    this.setModeCarte(false);
+                    defausseTresor.add(joueurActuel().removeOccurenceCarte("Sacs de Sable"));
+                    plateauJeu.updateDefausseTresor(defausseTresor);
                 }
-                actionCourante = "sacSable";
+                plateauJeu.updateGrille(grille, listeJoueurs);
+                plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
+                plateauJeu.refresh();
                 break;
-
-            case CARTE_HELICOPTERE://ajouter gagner
-                plateauJeu.resetHlight();
-                if (!prendreHelicoptere(joueurCourant())) {
-                    for (Tuile t : grille.getToutesTuilesInondeesAssechees()) {
-                        int[] pos = joueurCourant().getGrille().getPosFromTuile(t);
-                        plateauJeu.getTuileGraphique(pos[0], pos[1]).setHlight(joueurCourant().getPion().getCouleur());
-                    }
-                    actionCourante = "helicoptere";
-                }
-
+                
+            case DONNER_CARTE:
+                
                 break;
+                
+            case GAGNER_TRESOR:
+                
+                break;
+                
             case FINIR_TOUR:
-                plateauJeu.resetHlight();
-                destinateur = joueurCourant();
-
                 // 1. Les 3 actions max ont été faites... (PA = 0 ou "TERMINER TOUR")
                 // 2. Tirer 2 cartes trésor :
-                this.tirerCarteTresor(destinateur);
-                this.tirerCarteTresor(destinateur);
-                // 3. tirer 2 cartes Inondation :
+                this.tirerCarteTresor(joueurActuel());
+                this.tirerCarteTresor(joueurActuel());
+                // 3. tirer cartes Inondation en fonction du niveau d'eau :
                 for (int i = 0; i < niveauDEau.getWaterLevel(); i++) {
                     this.tirerCarteInondation();
                 }
-                deplacementCoulee();//deplace les joueurs qui se trouvent sur une case coulee
-
-                // Passage du tour de jeu :
-                //afficher panel joueur
-                // détermination du joueur suivant :
-                this.joueurSuivant();
-                //VueAventurier.vuesAventuriers.get(listeJoueurs[indexOrdre]).activer(); // activation du joueur suivant
-
-                destinateur.reinitialiserPA(); // on remet les PA du joueur précédent à 3
-
-                plateauJeu.updateCurrentPlayer(joueurCourant(),niveauDEau.getWaterLevel());
-                plateauJeu.updatePileTresor(defausseTresor);
-                plateauJeu.updatePileInondation(defausseInondation);
-                plateauJeu.update();
-                this.verifEtatPartie(); // test
+                
+                // nage d'urgence à compléter...
+                
+                // au tour du joueur suivant :
+                this.joueurActuel().reinitialiserPA(); // on remet les PA du joueur à 3 pour la prochaine fois
+                this.nextPlayer();
+                
+                plateauJeu.updateGrille(grille, listeJoueurs);
+                plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
+                plateauJeu.updateDefausseTresor(defausseTresor);
+                plateauJeu.updateDefausseInondation(defausseInondation);
+                plateauJeu.refresh();
+                break;
+                
+            case ABANDONNER:
+                plateauJeu.fermer();
+                ecranPrincipal.afficher();
+                break;
         }
-
-        //verifier si la partie est perdue
-        if (Perdu()) {
-            finirPartie("perdu");
-        }
-        //passer un tour si le joueur n'a plus de PA
-        if (joueurCourant().getPointAction() == 0) {
-            Message m = new Message();
-            m.type = TypesMessages.FINIR_TOUR;
-            m.destinateur = joueurCourant().getNomAventurier();
-            traiterMessage(m);
-        }
-
     }
-
+    
     // === UTILITAIRE ==========================================================
+
     private void tirerCarteInondation() {
         CarteInondation carteTiree = pileInondation.remove(0);
-        String nomTuile = carteTiree.getNomCarteI();
-        grille.getTuileFromName(nomTuile).inonderTuile();
-        if (grille.getTuileFromName(nomTuile).getEtat() != EtatTuile.COULEE) {
+        Tuile tuile = grille.getTuileFromName(carteTiree.getNomCarteI());
+        tuile.inonderTuile();
+        if (tuile.getEtat() != EtatTuile.COULEE) {
             defausseInondation.add(carteTiree);
-        } // sinon, elle est retirée définitivement du jeu.
-        //
-        // La nage d'urgence vers une carte adjacente et donc le game over ne sont pas encore traité...
-        //
-        // cas où il n'y a plus de cartes dans la pile :
+        }
+        
+        // traitement du Game Over...
+        
         if (pileInondation.isEmpty()) {
-            Utils.melangerInondation(defausseInondation); // on mélange la défausse...
+            Utils.melangerInondation(defausseInondation);
             for (int i = 0; i < defausseInondation.size(); i++) {
-                CarteInondation carte = defausseInondation.remove(0);
-                pileInondation.add(carte); // ... puis on la remet dans la pile.
+                pileInondation.add(defausseInondation.remove(0));
             }
         }
     }
 
-    // Les 2 premières cartes du démarrage
+    private void addPosition(Aventurier aventurier, int ligne, int colonne) {
+        Position pos = new Position(grille, aventurier, ligne, colonne);
+        grille.setPosJoueur(aventurier.getNomAventurier(), pos);
+        aventurier.setPosition(pos);
+    }
+
     private void tirerCarteTresorDemarrage(Aventurier aventurier) {
         CarteTresor carteTiree = pileTresor.remove(0);
-        while (carteTiree.getNomCarteT().equals("Montée des Eaux")) { // cf. Règles
+        while (carteTiree.getNomCarteT().equals("Montée des Eaux")) {
             pileTresor.add(carteTiree);
             Utils.melangerTresor(pileTresor);
             carteTiree = pileTresor.remove(0);
         }
         aventurier.addCarteTresor(carteTiree);
     }
-
-    // à la fin de chaque tour
+    
     private void tirerCarteTresor(Aventurier aventurier) {
-        // l'utilisation des cartes, n'étant pas encore faite, on décide de ne pas
-        // faire piocher le joueur si son deck est plein...
-        if (!aventurier.hasFullDeck()) { // temporaire
-            CarteTresor carteTiree = pileTresor.remove(0);
-            if (carteTiree.getNomCarteT().equals("Montée des Eaux")) {
-                // Monter le niveau d'eau d'un cran :
-                niveauDEau.monterNiveau();
-                // Mélanger + Remettre défausse Trésor :
-                if (!defausseInondation.isEmpty()) {
-                    Utils.melangerInondation(defausseInondation);
-                    for (int i = 0; i < defausseInondation.size(); i++) {
-                        CarteInondation carte = defausseInondation.remove(0);
-                        pileInondation.add(0, carte); // on remet dans la pile, AU DESSUS !
-                    }
+        CarteTresor carteTiree = pileTresor.remove(0);
+        if (carteTiree.getNomCarteT().equals("Montée des Eaux")) {
+            // Monter le niveau d'eau d'un cran :
+            niveauDEau.monterNiveau();
+            plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
+            // Mélanger + Remettre défausse Trésor :
+            if (!defausseInondation.isEmpty()) {
+                Utils.melangerInondation(defausseInondation);
+                for (int i = 0; i < defausseInondation.size(); i++) {
+                    pileInondation.add(0, defausseInondation.remove(0)); // on remet dans la pile, AU DESSUS !
                 }
-                // Mettre carte Montée des eaux dans la défausse :
-                defausseTresor.add(carteTiree);
-            } else {
-                aventurier.addCarteTresor(carteTiree);
             }
+            // Mettre carte Montée des Eaux dans la défausse :
+            defausseTresor.add(carteTiree);
+        } else {
+            aventurier.addCarteTresor(carteTiree);
         }
         // Quand il n'y a plus de cartes dans la pile Trésor...
         if (pileTresor.isEmpty()) {
@@ -409,50 +350,48 @@ public class Controleur implements Observateur {
             }
         }
     }
-
-    private void addPosition(Aventurier aventurier, int ligne, int colonne) {
-        Position position = new Position(grille, aventurier, ligne, colonne);
-        grille.setPosJoueur(aventurier.getNomAventurier(), position);
-        aventurier.setPosition(position);
+    
+    private void setModeCarte(boolean b) {
+        this.mode_carte = b;
     }
-
-    private void joueurSuivant() {
+    
+    private Aventurier joueurActuel() {
+        return joueurs.get(listeJoueurs.get(indexOrdre));
+    }
+    
+    private void nextPlayer() {
         if (indexOrdre == listeJoueurs.size() - 1) {
             indexOrdre = 0;
         } else {
             indexOrdre += 1;
         }
     }
-
-    public Aventurier joueurCourant() {
-        return joueurs.get(listeJoueurs.get(indexOrdre));
-    }
-    // === METHODES POUR LA PHASE DE TEST ======================================
-
+    
+    // === VERIFICATIONS =======================================================
+    
     private void verifEtatPartie() {
         // 1. Créer l'île interdite :
         // cf. affichage du plateau de jeu test
 
         // 2. Placer les trésors :
         this.verifTresors();
-
+        
         // 3. Séparer les cartes :
         this.verifPilesCarte();
-
+        
         // 4. L'ile commence à sombrer :
         this.verifTuilesInondees();
-
+        
         // 5. Les aventuriers débarquent :
         this.verifEtatJoueurs();
-
+        
         // 6. distribuer les cartes Trésor :
         this.verifDeckTresorJoueurs();
-
+        
         // 7. Déterminer le niveau d'eau :
         this.verifNiveauEau();
-
     }
-
+    
     private void verifTresors() {
         System.out.println("Vérification de la collection de trésors : ");
         System.out.println("\tfalse : pas obtenu // true : obtenu");
@@ -461,7 +400,7 @@ public class Controleur implements Observateur {
         }
         System.out.println();
     }
-
+    
     private void verifPilesCarte() {
         // Pile / Défausse Tresor :
         System.out.println("Vérification Pile TRESOR : ");
@@ -470,14 +409,14 @@ public class Controleur implements Observateur {
         }
         System.out.println(pileTresor.size() + " cartes.");
         System.out.println();
-
+        
         System.out.println("Vérification Defausse TRESOR : ");
         for (CarteTresor carte : defausseTresor) {
             System.out.println("\t- " + carte.getNomCarteT());
         }
         System.out.println(defausseTresor.size() + " cartes.");
         System.out.println();
-
+        
         // Pile / Défausse Inondation :
         System.out.println("Vérification Pile INONDATION : ");
         for (CarteInondation carte : pileInondation) {
@@ -485,14 +424,14 @@ public class Controleur implements Observateur {
         }
         System.out.println(pileInondation.size() + " cartes.");
         System.out.println();
-
+        
         System.out.println("Vérification Defausse INONDATION : ");
         for (CarteInondation carte : defausseInondation) {
             System.out.println("\t- " + carte.getNomCarteI());
         }
         System.out.println(defausseInondation.size() + " cartes.");
         System.out.println();
-
+        
         // Pile Aventurier :
         System.out.println("Vérification Pile AVENTURIER : ");
         for (CarteAventurier carte : pileAventurier) {
@@ -502,7 +441,7 @@ public class Controleur implements Observateur {
         System.out.println(pileAventurier.size() + " cartes.");
         System.out.println();
     }
-
+    
     private void verifTuilesInondees() {
         System.out.println("Vérification des tuiles inondées :");
         Tuile tuile;
@@ -516,7 +455,7 @@ public class Controleur implements Observateur {
         }
         System.out.println();
     }
-
+    
     private void verifTuilesCoulees() {
         System.out.println("Vérification des tuiles coulées :");
         Tuile tuile;
@@ -530,7 +469,7 @@ public class Controleur implements Observateur {
         }
         System.out.println();
     }
-
+    
     private void verifEtatJoueurs() {
         System.out.println("Vérification des joueurs :");
         for (String nomJoueur : listeJoueurs) {
@@ -544,7 +483,7 @@ public class Controleur implements Observateur {
         }
         System.out.println();
     }
-
+    
     private void verifDeckTresorJoueurs() {
         System.out.println("Vérification des decks des joueurs :");
         for (String nomJoueur : listeJoueurs) {
@@ -556,99 +495,12 @@ public class Controleur implements Observateur {
         }
         System.out.println();
     }
-
+    
     private void verifNiveauEau() {
         System.out.println("Vérification du niveau d'eau :");
         System.out.println("\tdifficulte : " + difficulte);
         System.out.println("\tIndex : " + niveauDEau.getIndexLevel());
         System.out.println("\tNiveau d'eau : " + niveauDEau.getWaterLevel());
         System.out.println();
-    }
-
-    public boolean Perdu() {//rajouter message
-        boolean flag = false;
-        //si les 2 tuile d'un trésor sombrent avant d'avoir recup le trésor
-        for (Tresor t : collectionTresor.keySet()) {
-            if (!collectionTresor.get(t)) {
-                switch (t) {
-                    case PIERRE:
-                        if (grille.getTuileFromName("Le Temple de la Lune").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Temple du Soleil").getEtat() == EtatTuile.COULEE) {
-                            flag = true;
-                        }
-                        break;
-                    case STATUE:
-                        if (grille.getTuileFromName("Le Jardin des Murmures").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Jardin des Hurlements").getEtat() == EtatTuile.COULEE) {
-                            flag = true;
-                        }
-                        break;
-                    case CRISTAL:
-                        if (grille.getTuileFromName("La Caverne du Brasier").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("La Caverne des Ombres").getEtat() == EtatTuile.COULEE) {
-                            flag = true;
-                        }
-                        break;
-                    case CALICE:
-                        if (grille.getTuileFromName("Le Palais de Corail").getEtat() == EtatTuile.COULEE && grille.getTuileFromName("Le Palais des Marees").getEtat() == EtatTuile.COULEE) {
-                            flag = true;
-                        }
-                        break;
-                }
-            }
-        }
-
-        //si l'heliport sombre
-        if (grille.getTuileFromName("Heliport").getEtat() == EtatTuile.COULEE) {
-            flag = true;
-        }
-
-        //si un pion sur une tuile coulee ne peut pas nager sur une autre tuile 
-        for (String s : joueurs.keySet()) {
-            Aventurier j = joueurs.get(s);
-            if (j.getTuile().getEtat() == EtatTuile.COULEE) {
-                if (j.getTuilesDeplacement().isEmpty()) {
-                    flag = true;
-                }
-            }
-        }
-        //si le marqueur atteint la mort
-        if (niveauDEau.getWaterLevel() == 0) {
-            flag = true;
-        }
-        return flag;
-    }
-
-    public void deplacementCoulee() {
-        for (String nom : joueurs.keySet()) {
-            Aventurier a = joueurs.get(nom);
-            if (a.getTuile().getEtat() == EtatTuile.COULEE && !a.getTuilesDeplacement().isEmpty()) {
-                a.seDeplacer(grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[0], grille.getPosFromTuile(a.getTuilesDeplacement().get(0))[1]);
-            }
-        }
-    }
-    //carte helicoptère    
-    //public Boolean Gagne(){
-
-    public boolean prendreHelicoptere(Aventurier joueur) {
-        boolean toutLesTresors = true;
-
-        for (Tresor t : collectionTresor.keySet()) {
-            if (collectionTresor.get(t).equals(false)) {
-                toutLesTresors = false;
-            }
-        }
-
-        if (joueur.getRole().getJoueursTuile().size() == nbJoueurs - 1 && toutLesTresors == true) {
-            finirPartie("gagner");
-            return true;
-        }
-        return false;
-    }
-
-    public void finirPartie(String resultat) {
-        if (resultat.equals("gagner")) {
-            System.out.println("Vous avez gagné !");
-        } else {
-            System.out.println("Vous avez perdu !");
-        }
-
     }
 }
