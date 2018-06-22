@@ -149,6 +149,31 @@ public class PlateauJeu extends Observe {
         this.redimension();
         this.initListener();
         
+        panelJ1H.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Message m = new Message();
+                
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        
         window.add(panelMain);
     }
     
@@ -394,6 +419,9 @@ public class PlateauJeu extends Observe {
     }
 
     // === LISTENERS ===========================================================
+    
+    
+    
     private void redimension() {
         window.addComponentListener(new ComponentListener() {
             @Override
