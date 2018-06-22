@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package Vues.PlateauJeu;
+import MVC.Message;
+import MVC.TypesMessages;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,64 +22,35 @@ import javax.swing.event.PopupMenuListener;
 
 public class PopupMenu extends JPanel {
 
-  public JPopupMenu popup;
+  private JPopupMenu popup;
+  private String nomCarte;
+  private PlateauJeu plateau;
 
-  public PopupMenu() {
+  public PopupMenu(String nomCarte,PlateauJeu plateau) {
+    this.plateau = plateau;
+    this.nomCarte = nomCarte;
     popup = new JPopupMenu();
+    
     ActionListener menuListener = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent event) {
-        System.out.println("Popup menu item ["
-            + event.getActionCommand() + "] was pressed.");
+        Message m = new Message();
+        m.type = TypesMessages.JETER_CARTE;
+        m.nomCarteT = nomCarte;
+        plateau.notifierObservateur(m);
       }
     };
     JMenuItem item;
-    popup.add(item = new JMenuItem("Left", new ImageIcon("1.gif")));
+    popup.add(item = new JMenuItem("Jeter Carte"));
     item.setHorizontalTextPosition(JMenuItem.RIGHT);
-    item.addActionListener(menuListener);
-    popup.add(item = new JMenuItem("Center", new ImageIcon("2.gif")));
-    item.setHorizontalTextPosition(JMenuItem.RIGHT);
-    item.addActionListener(menuListener);
-    popup.add(item = new JMenuItem("Right", new ImageIcon("3.gif")));
-    item.setHorizontalTextPosition(JMenuItem.RIGHT);
-    item.addActionListener(menuListener);
-    popup.add(item = new JMenuItem("Full", new ImageIcon("4.gif")));
-    item.setHorizontalTextPosition(JMenuItem.RIGHT);
-    item.addActionListener(menuListener);
-    popup.addSeparator();
-    popup.add(item = new JMenuItem("Settings . . ."));
     item.addActionListener(menuListener);
 
     popup.setLabel("Justification");
     popup.setBorder(new BevelBorder(BevelBorder.RAISED));
     popup.addPopupMenuListener(new PopupPrintListener());
 
-    addMouseListener(new MousePopupListener());
   }
 
-  // An inner class to check whether mouse events are the popup trigger
-  class MousePopupListener extends MouseAdapter {
-    @Override
-    public void mousePressed(MouseEvent e) {
-      checkPopup(e);
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-      checkPopup(e);
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-      checkPopup(e);
-    }
-
-    private void checkPopup(MouseEvent e) {
-      if (e.isPopupTrigger()) {
-        popup.show(PopupMenu.this, e.getX(), e.getY());
-      }
-    }
-  }
   public void afficher(Component c,int x,int y){
       popup.show(c,x,y);
   }

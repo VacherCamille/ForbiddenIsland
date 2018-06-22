@@ -14,6 +14,7 @@ public enum TypesMessages {
     DONNER_CARTE,
     GAGNER_TRESOR,
     SE_DEPLACER,
+    JETER_CARTE,
     ASSECHER,
     FINIR_TOUR,
     ABANDONNER,
