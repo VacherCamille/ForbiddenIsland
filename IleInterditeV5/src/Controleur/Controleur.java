@@ -230,6 +230,7 @@ public class Controleur implements Observateur {
                 plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
                 plateauJeu.refresh();
                 plateauJeu.updateGrille(grille, listeJoueurs);
+                plateauJeu.updateDefausseTresor(defausseTresor);
                 break;
 
             case AFFICHER_CASES_ASSECHEMENT:
