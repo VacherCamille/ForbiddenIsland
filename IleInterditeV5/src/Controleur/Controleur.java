@@ -336,6 +336,7 @@ public class Controleur implements Observateur {
                 break;
 
             case JOUEUR:
+                                    System.out.println("zzzz");
                 if (mode_carte) {//helicoptere
                     int i = 0;
                     switch (msg.destinataire) {
