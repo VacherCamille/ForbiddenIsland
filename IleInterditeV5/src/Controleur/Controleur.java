@@ -71,6 +71,7 @@ public class Controleur implements Observateur {
 
     private NivEau niveauDEau;
 
+    private Aventurier joueurDeplace;
     // Variables utilitaires :
     private boolean mode_carte = false;
     private boolean actPrecAss = false;
@@ -202,7 +203,7 @@ public class Controleur implements Observateur {
                 if (!msg.cardMode) {
                     tuilesDep = joueurActuel().getTuilesDeplacement();
                 } else {
-                    if (!prendreHelicoptere(null)) {
+                    if (!prendreHelicoptere(joueurActuel())) {
                         tuilesDep = grille.getTuilesInondeesAssechees();
                         this.setModeCarte(true);
                     }
@@ -217,10 +218,11 @@ public class Controleur implements Observateur {
                 break;
 
             case SE_DEPLACER:
-                joueurActuel().seDeplacer(msg.posL, msg.posC);
                 if (!mode_carte) {
+                    joueurActuel().seDeplacer(msg.posL, msg.posC);
                     joueurActuel().utiliserPA();
                 } else {
+                    joueurDeplace.seDeplacer(msg.posL, msg.posC);
                     this.setModeCarte(false);
                     defausseTresor.add(joueurActuel().removeOccurenceCarte("Helicoptere"));
                     plateauJeu.updateDefausseTresor(defausseTresor);
@@ -229,9 +231,9 @@ public class Controleur implements Observateur {
                 plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
                 plateauJeu.refresh();
                 break;
-                
-            case JETER_CARTE:   
-                this.jeterCarte(joueurActuel(),joueurActuel().getCarteTresorFromName(msg.nomCarteT));
+
+            case JETER_CARTE:
+                this.jeterCarte(joueurActuel(), joueurActuel().getCarteTresorFromName(msg.nomCarteT));
                 plateauJeu.updateCurrentPlayer(joueurActuel(), niveauDEau.getIndexLevel());
                 plateauJeu.refresh();
                 plateauJeu.updateGrille(grille, listeJoueurs);
@@ -333,6 +335,36 @@ public class Controleur implements Observateur {
                 Perdu();
                 break;
 
+            case JOUEUR:
+                if (mode_carte) {//helicoptere
+                    int i = 0;
+                    switch (msg.destinataire) {
+                        case "1":
+                            i = 0;
+                            break;
+                        case "2":
+                            i = 1;
+                            break;
+                        case "3":
+                            i = 2;
+                            break;
+                        case "4":
+                            i = 3;
+                    }
+                    joueurDeplace = joueurs.get(i);
+                    Message m = new Message();
+                    m.type = TypesMessages.AFFICHER_CASES_DEPLACEMENT;
+                    m.cardMode = true;
+                    traiterMessage(m);
+                    this.setModeCarte(false);
+                } else {//donnercarte
+
+                }
+                break;
+
+            case HELICOPTERE:
+                mode_carte = true;
+                break;
             case ABANDONNER:
                 plateauJeu.fermer();
                 ecranPrincipal.afficher();
@@ -406,8 +438,8 @@ public class Controleur implements Observateur {
         }
 
     }
-    
-    public void jeterCarte(Aventurier aventurier,CarteTresor carte){
+
+    public void jeterCarte(Aventurier aventurier, CarteTresor carte) {
         aventurier.getDeckTresor().remove(carte);
         defausseTresor.add(carte);
     }
@@ -644,7 +676,6 @@ public class Controleur implements Observateur {
     }
 
     public void finirPartie(boolean b) {
-        plateauJeu.fermer();
         fin.setEtat(b);
         fin.afficher(true);
     }
